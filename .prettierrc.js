@@ -1,7 +1,7 @@
 // https://prettier.io/docs/en/options.html
 
 module.exports = {
-  semi: false, // 行尾不加分号
+  semi: true, // 行尾不加分号
   printWidth: 120, // 语句长度超过120将换行
   singleQuote: true, // 使用单引号
   bracketSpacing: true, // 对象字面量前后不加空格 true-{ foo: bar } false-{foo: bar}

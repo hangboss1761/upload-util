@@ -34,6 +34,8 @@ module.exports = {
     // 'generator-star-spacing': 0,
     'no-console': 0,
     'comma-dangle': 0,
+    'no-restricted-syntax': 0,
+    'no-await-in-loop': 0,
     // 'no-debugger': 0,
     // 一行的最大长度
     'max-len': [2, 130],
@@ -45,10 +47,10 @@ module.exports = {
     // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin/docs/rules
     // '@typescript-eslint/semi': ['error'],
     // '@typescript-eslint/indent': ['error', 2],
-    // '@typescript-eslint/explicit-function-return-type': 0,
+    '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-unused-expressions': 0,
     '@typescript-eslint/no-var-requires': 0,
   },
-}
+};
