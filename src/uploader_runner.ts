@@ -1,5 +1,5 @@
 import { fromEvent } from 'rxjs';
-import { Uploader } from './interface';
+import { Uploader } from './interface/common';
 
 export class UploaderRunner {
   private uploaderMap: Map<string, Uploader>;
@@ -10,7 +10,7 @@ export class UploaderRunner {
 
   register(name: string, uploader: Uploader) {
     this.uploaderMap.set(name, uploader);
-    fromEvent(uploader, 'upload:destroy').subscribe(() => this.unregister(name));
+    fromEvent<Uploader>(uploader, 'upload:destroy').subscribe(() => this.unregister(name));
   }
 
   unregister(name: string) {

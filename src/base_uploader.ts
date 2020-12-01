@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { Options } from './interface';
+import { Options } from './interface/interface';
 
 const showOverrideTips = (method: string, namespace = 'BaseUploader') => {
   throw new Error(`[${namespace}] Method: ${method} should be override`);
@@ -21,19 +21,29 @@ export class BaseUploader extends EventEmitter {
     showOverrideTips('connect');
   }
 
-  onReady() {}
+  onReady() {
+    console.log('[BaseUploader] connect ready.');
+    this.emit('upload:ready');
+  }
 
   startUpload() {
     showOverrideTips('startUpload');
   }
 
-  onStart() {}
+  onStart() {
+    console.log('[BaseUploader] start.');
+    this.emit('upload:start');
+  }
 
   onFileUpload(filePath: string) {
+    console.log(`[BaseUploader] file: ${filePath} upload successfully \n`);
     this.emit('upload:file', this.options, filePath);
   }
 
-  onSuccess() {}
+  onSuccess() {
+    console.log(`[BaseUploader] all files uploaded successfully \n`);
+    this.emit('upload:success');
+  }
 
   onFailure(e: string) {
     console.error('[BaseUploader] file upload error.', e);

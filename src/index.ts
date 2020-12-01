@@ -1,4 +1,4 @@
-import { Options, Config } from './interface';
+import { Options, Config } from './interface/interface';
 import { FtpUploader } from './ftp_uploader';
 import { SftpUploader } from './sftp_uploader';
 import { UploaderRunner } from './uploader_runner';
@@ -19,5 +19,5 @@ export const run = (config: Config) => {
     uploaderRunner.register('sftp', uploadFactory(SftpUploader, config.sftp));
   }
 
-  uploaderRunner.start().then(() => process.exit(0))
+  uploaderRunner.start();
 };
