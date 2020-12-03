@@ -14,19 +14,25 @@ export class FtpUploader extends BaseUploader {
   }
 
   connect() {
-    this.client = new Client();
+    return new Promise((resolve) => {
+      this.client = new Client();
 
-    console.log('start connect');
-    this.client.connect({
-      host: this.options.host,
-      port: this.options.port,
-      user: this.options.user,
-      password: this.options.password
-    });
+      console.log('start connect');
 
-    fromEvent(this.client, 'ready').subscribe(() => this.onReady());
-    fromEvent(this.client, 'error').subscribe((e: string) => {
-      throw new Error(e);
+      this.client.connect({
+        host: this.options.host,
+        port: this.options.port,
+        user: this.options.user,
+        password: this.options.password
+      });
+
+      fromEvent(this.client, 'ready').subscribe(() => {
+        this.onReady();
+        resolve();
+      });
+      fromEvent(this.client, 'error').subscribe((e: string) => {
+        throw new Error(e);
+      });
     });
   }
 
@@ -46,7 +52,7 @@ export class FtpUploader extends BaseUploader {
       };
 
       if (fs.statSync(filePath).isDirectory()) {
-        this.client.mkdir(filePath, true, clientCb);
+        this.client.mkdir(destPath, true, clientCb);
       } else {
         this.client.put(filePath, destPath, false, clientCb);
       }
@@ -59,7 +65,7 @@ export class FtpUploader extends BaseUploader {
   startUpload() {
     const parsedFiles = parseFiles(this.options.files);
     const getRealPath = (filePath: string) => path.join(this.options.rootPath || process.cwd(), filePath);
-    const getDestPath = (filePath: string) => path.join(this.options.destRootPath || '', filePath);
+    const getDestPath = (filePath: string) => path.join(this.options.destRootPath, filePath);
 
     const fileUploadObservableMap = parsedFiles.map((filePath) =>
       from(this.upload(getRealPath(filePath), getDestPath(filePath)))
@@ -67,7 +73,7 @@ export class FtpUploader extends BaseUploader {
 
     fileUploadObservableMap.forEach((fileUploadObservable) => {
       // 订阅每个文件上传成功出发的事件
-      fileUploadObservable.subscribe(this.onFileUpload);
+      fileUploadObservable.subscribe((res) => this.onFileUpload(res));
     });
 
     // 作用类似Promise.all

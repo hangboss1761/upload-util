@@ -1,8 +1,7 @@
 import glob from 'glob';
 import fs from 'fs';
-import path from 'path';
 
-export const parseFiles = (files: string[] = [], rootPath = ''): string[] => {
+export const parseFiles = (files: string[] = []): string[] => {
   return files.reduce((acc, curr) => {
     if (fs.existsSync(curr)) {
       if (fs.statSync(curr).isDirectory()) {

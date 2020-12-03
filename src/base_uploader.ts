@@ -8,6 +8,8 @@ const showOverrideTips = (method: string, namespace = 'BaseUploader') => {
 export class BaseUploader extends EventEmitter {
   options: Options;
 
+  destoryed = false;
+
   constructor(options: Options) {
     super();
     this.initOptions(options);
@@ -50,9 +52,16 @@ export class BaseUploader extends EventEmitter {
     this.emit('upload:failure', this.options, e);
   }
 
-  onBeforeDestory() {}
+  onDestoryed() {
+    this.emit('upload:destroy');
+  }
 
-  onDestoryed() {}
-
-  destory() {}
+  destory() {
+    if (!this.destoryed) {
+      this.options = null;
+      this.removeAllListeners();
+      this.onDestoryed();
+      this.destoryed = true;
+    }
+  }
 }
