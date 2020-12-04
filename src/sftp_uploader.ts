@@ -1,5 +1,4 @@
 import Client from 'ssh2-sftp-client';
-import { forkJoin, from } from 'rxjs';
 import fs from 'fs';
 import path from 'path';
 import { BaseUploader } from './base_uploader';
@@ -47,31 +46,24 @@ export class SftpUploader extends BaseUploader {
   /**
    * 依次上传所有文件
    */
-  startUpload() {
-    const parsedFiles = parseFiles(this.options.files);
-    const getRealPath = (filePath: string) => path.join(this.options.rootPath || process.cwd(), filePath);
-    const getDestPath = (filePath: string) => path.posix.join(this.options.destRootPath, filePath);
+  async startUpload(): Promise<void> {
+    try {
+      const parsedFiles = parseFiles(this.options.files);
+      const getRealPath = (filePath: string) => path.join(this.options.rootPath || process.cwd(), filePath);
+      const getDestPath = (filePath: string) => path.posix.join(this.options.destRootPath, filePath);
 
-    const fileUploadObservableMap = parsedFiles.map((filePath) =>
-      from(this.upload(getRealPath(filePath), getDestPath(filePath)))
-    );
-
-    fileUploadObservableMap.forEach((fileUploadObservable) => {
-      // 订阅每个文件上传成功出发的事件
-      fileUploadObservable.subscribe((res) => this.onFileUpload(res));
-    });
-
-    // 作用类似Promise.all
-    forkJoin(fileUploadObservableMap).subscribe(
-      () => {
-        this.client.end();
-        this.onSuccess();
-      },
-      (e) => {
-        this.client.end();
-        this.onFailure(e);
+      // 串行上传所有文件
+      for (const filePath of parsedFiles) {
+        await this.upload(getRealPath(filePath), getDestPath(filePath));
+        this.onFileUpload(filePath, parsedFiles);
       }
-    );
+
+      this.onSuccess();
+      await this.client.end();
+    } catch (error) {
+      this.onFailure(error);
+      await this.client.end();
+    }
   }
 
   onDestoryed() {

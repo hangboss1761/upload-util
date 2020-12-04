@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Options } from './interface/interface';
 
-const showOverrideTips = (method: string, namespace = 'BaseUploader') => {
+const showOverrideTips = (method: string, namespace = 'Uploader') => {
   throw new Error(`[${namespace}] Method: ${method} should be override`);
 };
 
@@ -24,7 +24,7 @@ export class BaseUploader extends EventEmitter {
   }
 
   onReady() {
-    console.log('[BaseUploader] connect ready.');
+    console.log('[Uploader] connect ready.');
     this.emit('upload:ready');
   }
 
@@ -32,23 +32,23 @@ export class BaseUploader extends EventEmitter {
     showOverrideTips('startUpload');
   }
 
-  onStart() {
-    console.log('[BaseUploader] start.');
-    this.emit('upload:start');
+  onStart(files: string[]) {
+    console.log('[Uploader] start.');
+    this.emit('upload:start', this.options, files);
   }
 
-  onFileUpload(filePath: string) {
-    console.log(`[BaseUploader] file: ${filePath} upload successfully \n`);
-    this.emit('upload:file', this.options, filePath);
+  onFileUpload(filePath: string, files: string[]) {
+    console.log(`[Uploader] file: ${filePath} upload successfully \n`);
+    this.emit('upload:file', this.options, files, filePath);
   }
 
   onSuccess() {
-    console.log(`[BaseUploader] all files uploaded successfully \n`);
-    this.emit('upload:success');
+    console.log(`[Uploader] all files uploaded successfully \n`);
+    this.emit('upload:success', this.options);
   }
 
   onFailure(e: string) {
-    console.error('[BaseUploader] file upload error.', e);
+    console.error('[Uploader] file upload error.', e);
     this.emit('upload:failure', this.options, e);
   }
 
