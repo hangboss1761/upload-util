@@ -65,6 +65,8 @@ export class FtpUploader extends BaseUploader {
       const getRealPath = (filePath: string) => path.join(this.options.rootPath || process.cwd(), filePath);
       const getDestPath = (filePath: string) => path.join(this.options.destRootPath, filePath);
 
+      this.onStart(parsedFiles);
+
       // 串行上传所有文件
       for (const filePath of parsedFiles) {
         await this.upload(getRealPath(filePath), getDestPath(filePath));
