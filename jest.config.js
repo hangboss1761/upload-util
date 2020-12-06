@@ -1,5 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
+  setupFilesAfterEnv: ['./jest.setup.js'],
   rootDir: __dirname,
   testMatch: ['<rootDir>/test/**/*test.[jt]s?(x)'],
   coverageDirectory: 'coverage',
