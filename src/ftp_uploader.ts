@@ -1,7 +1,7 @@
-import Client from 'ftp';
-import fs from 'fs';
-import path from 'path';
-import { fromEvent, forkJoin, from } from 'rxjs';
+import * as Client from 'ftp';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fromEvent } from 'rxjs';
 import { BaseUploader } from './base_uploader';
 import { Options } from './interface/interface';
 import { parseFiles } from './util';
@@ -13,7 +13,7 @@ export class FtpUploader extends BaseUploader {
     this.options = options;
   }
 
-  connect() {
+  connect(): Promise<void> {
     return new Promise((resolve) => {
       this.client = new Client();
 
@@ -52,7 +52,7 @@ export class FtpUploader extends BaseUploader {
       if (fs.statSync(filePath).isDirectory()) {
         this.client.mkdir(destPath, true, clientCb);
       } else {
-        this.client.put(filePath, destPath, false, clientCb);
+        this.client.put(fs.readFileSync(filePath), destPath, false, clientCb);
       }
     });
   }
@@ -60,10 +60,11 @@ export class FtpUploader extends BaseUploader {
   /**
    * 依次上传所有文件
    */
-  async startUpload() {
+  async startUpload(): Promise<void> {
+    try {
       const parsedFiles = parseFiles(this.options.files);
       const getRealPath = (filePath: string) => path.join(this.options.rootPath || process.cwd(), filePath);
-      const getDestPath = (filePath: string) => path.join(this.options.destRootPath, filePath);
+      const getDestPath = (filePath: string) => path.posix.join(this.options.destRootPath, filePath);
 
       this.onStart(parsedFiles);
 
@@ -73,15 +74,13 @@ export class FtpUploader extends BaseUploader {
         this.onFileUpload(filePath, parsedFiles);
       }
 
-      this.onSuccess();
-      this.client.end();
+      this.onSuccess(parsedFiles);
     } catch (error) {
       this.onFailure(error);
-      this.client.end();
     }
-  },
+  }
 
-  onDestoryed() {
+  onDestoryed(): void {
     if (this.client) {
       this.client.destroy();
       this.client = null;

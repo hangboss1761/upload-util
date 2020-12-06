@@ -18,9 +18,13 @@ export class UploaderRunner {
   }
 
   async start() {
-    for (const [, uploader] of this.uploaderMap) {
-      await uploader.connect();
-      await uploader.startUpload();
+    try {
+      for (const [, uploader] of this.uploaderMap) {
+        await uploader.connect();
+        await uploader.startUpload();
+      }
+    } catch (e) {
+      throw new Error(e);
     }
   }
 }

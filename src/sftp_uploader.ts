@@ -1,6 +1,6 @@
-import Client from 'ssh2-sftp-client';
-import fs from 'fs';
-import path from 'path';
+import * as Client from 'ssh2-sftp-client';
+import * as fs from 'fs';
+import * as path from 'path';
 import { BaseUploader } from './base_uploader';
 import { Options } from './interface/interface';
 import { parseFiles } from './util';
@@ -12,23 +12,19 @@ export class SftpUploader extends BaseUploader {
     this.options = options;
   }
 
-  connect() {
-    this.client = new Client();
-
-    console.log('start connect');
-    return this.client
-      .connect({
+  async connect() {
+    try {
+      this.client = new Client();
+      await this.client.connect({
         host: this.options.host,
         port: this.options.port,
         username: this.options.user,
         password: this.options.password
-      })
-      .then(() => {
-        this.onReady();
-      })
-      .catch((e) => {
-        throw new Error(e);
       });
+      this.onReady();
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
   /**
@@ -60,11 +56,9 @@ export class SftpUploader extends BaseUploader {
         this.onFileUpload(filePath, parsedFiles);
       }
 
-      this.onSuccess();
-      await this.client.end();
+      this.onSuccess(parsedFiles);
     } catch (error) {
       this.onFailure(error);
-      await this.client.end();
     }
   }
 

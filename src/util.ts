@@ -1,5 +1,5 @@
-import glob from 'glob';
-import fs from 'fs';
+import * as glob from 'glob';
+import * as fs from 'fs';
 
 export const parseFiles = (files: string[] = []): string[] => {
   return files.reduce((acc, curr) => {
@@ -15,11 +15,4 @@ export const parseFiles = (files: string[] = []): string[] => {
 
     return acc;
   }, []);
-};
-
-export const objToArray = <T>(data: T[] | T): T[] => {
-  if (Array.isArray(data)) {
-    return data;
-  }
-  return [data];
 };

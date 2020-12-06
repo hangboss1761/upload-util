@@ -2,49 +2,74 @@
 
 require = require('esm')(module /*, options*/);
 const commander = require('commander');
-const packageConfig = require('../package');
-const hb = require('../lib/src/command/index');
-
-commander.version(packageConfig.version, '-v --version').usage('<command> [options]');
+const { prompt } = require('enquirer');
+const { run } = require('../dist/index');
 
 commander
-  .command('add [filePath] [targetPath]')
-  .description('copy file')
-  .action((filePath, targetPath) => {
+  .command('start')
+  .description('start upload')
+  .action(async () => {
     try {
-      hb.runAdd(filePath, targetPath);
+      const response = await prompt([
+        {
+          type: 'select',
+          name: 'type',
+          message: 'Please pick a type',
+          choices: ['sftp', 'ftp']
+        },
+        {
+          type: 'input',
+          name: 'host',
+          message: 'Please enter host'
+        },
+        {
+          type: 'input',
+          name: 'port',
+          message: 'Please enter port'
+        },
+        {
+          type: 'input',
+          name: 'user',
+          message: 'Please enter username'
+        },
+        {
+          type: 'password',
+          name: 'password',
+          message: 'Please enter password'
+        },
+        {
+          type: 'input',
+          name: 'files',
+          message: 'Please enter the file waiting to be uploaded, please separate multiple files with commas'
+        },
+        {
+          type: 'input',
+          name: 'destRootPath',
+          message: 'Please enter destPath in remote'
+        }
+      ]);
+
+      const getUploadOpitons = (response) => ({
+        host: response.host,
+        user: response.user,
+        port: response.port,
+        user: response.user,
+        password: response.password,
+        files: response.files.split(','),
+        destRootPath: response.destRootPath
+      });
+
+      if (response.type === 'sftp') {
+        run({
+          sftp: getUploadOpitons(response)
+        });
+      } else {
+        run({
+          ftp: getUploadOpitons(response)
+        });
+      }
     } catch (err) {
       console.error(err.stack);
-      process.exit(1);
-    }
-  });
-
-commander
-  .command('block <action> [url] [destPath]')
-  .option('-c, --skip-conflict', 'skip to throw deps conflict error')
-  .option('-i, --skip-install', 'skip to install deps')
-  .option('-u, --skip-update', 'skip to update local material-store cache')
-  .description(
-    `
-    run block <action>
-    --skip-conflict: skip to throw deps conflict error,
-    --skip-update: skip to update local material-store cache,
-    --skip-install: skip to install deps`
-  )
-  .action((action, url, destPath, options) => {
-    try {
-      let { skipConflict: isSkipConflict, skipInstall: isSkipInstall, skipUpdate: isSkipUpdate } = options;
-
-      hb.runBlock({
-        action,
-        url,
-        destPath,
-        isSkipConflict,
-        isSkipInstall,
-        isSkipUpdate
-      });
-    } catch (error) {
-      console.error(error.stack);
       process.exit(1);
     }
   });

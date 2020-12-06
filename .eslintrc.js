@@ -1,7 +1,7 @@
 module.exports = {
   plugins: ['@typescript-eslint'],
   parserOptions: {
-    project: './tsconfig.json',
+    project: './tsconfig.json'
   },
   parser: '@typescript-eslint/parser',
   extends: [
@@ -10,13 +10,13 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier',
-    'prettier/@typescript-eslint',
+    'prettier/@typescript-eslint'
   ],
   root: true,
   env: {
     node: true,
     serviceworker: true,
-    jest: true,
+    jest: true
   },
   rules: {
     // 设置默认eslint规则
@@ -36,6 +36,7 @@ module.exports = {
     'comma-dangle': 0,
     'no-restricted-syntax': 0,
     'no-await-in-loop': 0,
+    'no-plusplus': 0,
     // 'no-debugger': 0,
     // 一行的最大长度
     'max-len': [2, 130],
@@ -51,6 +52,6 @@ module.exports = {
     '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-unused-expressions': 0,
-    '@typescript-eslint/no-var-requires': 0,
-  },
+    '@typescript-eslint/no-var-requires': 0
+  }
 };

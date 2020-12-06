@@ -42,9 +42,9 @@ export class BaseUploader extends EventEmitter {
     this.emit('upload:file', this.options, files, filePath);
   }
 
-  onSuccess() {
+  onSuccess(files: string[]) {
     console.log(`[Uploader] all files uploaded successfully \n`);
-    this.emit('upload:success', this.options);
+    this.emit('upload:success', this.options, files);
   }
 
   onFailure(e: string) {
