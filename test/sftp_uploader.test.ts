@@ -1,7 +1,7 @@
 import { SftpUploader } from '../src/sftp_uploader';
 import { sftpConfig } from './widgets/config';
 describe('Uploader Sftp', () => {
-  test('run uploader', async () => {
+  test('run uploader', async (done) => {
     const mockFn = jest.fn(() => {});
     const uploader = new SftpUploader(sftpConfig);
 
@@ -15,5 +15,6 @@ describe('Uploader Sftp', () => {
       uploader.destory();
     });
     uploader.on('upload:destroy', () => expect(mockFn.mock.calls.length).toBe(3));
+    done();
   });
 });
