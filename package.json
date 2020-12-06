@@ -11,7 +11,8 @@
     "lint": "eslint --fix src/**/* --ext .ts,.js",
     "lint-without-fix": "eslint src/**/* --ext .ts,.js",
     "test": "jest",
-    "test:cover": "jest --coverage"
+    "test:cover": "jest --coverage",
+    "coverall": "cat coverage/lcov.info | coveralls"
   },
   "bin": {
     "upload": "bin/index.js"
