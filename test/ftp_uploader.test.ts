@@ -14,8 +14,8 @@ describe('Uploader Ftp', () => {
     uploader.on('upload:ready', mockFn);
     uploader.on('upload:start', mockFn);
     uploader.on('upload:success', () => {
-      mockFn();
       uploader.destory();
+      mockFn();
     });
     uploader.on('upload:destroy', () => expect(mockFn.mock.calls.length).toBe(3));
     done();

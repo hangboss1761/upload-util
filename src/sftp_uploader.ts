@@ -56,15 +56,16 @@ export class SftpUploader extends BaseUploader {
         this.onFileUpload(filePath, parsedFiles);
       }
 
+      await this.client.end();
       this.onSuccess(parsedFiles);
     } catch (error) {
+      await this.client.end();
       this.onFailure(error);
     }
   }
 
   onDestoryed() {
     if (this.client) {
-      this.client.end();
       this.client = null;
     }
     super.onDestoryed();

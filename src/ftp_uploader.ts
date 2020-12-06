@@ -74,17 +74,17 @@ export class FtpUploader extends BaseUploader {
         this.onFileUpload(filePath, parsedFiles);
       }
 
+      this.client.destroy();
       this.onSuccess(parsedFiles);
     } catch (error) {
+      this.client.destroy();
       this.onFailure(error);
     }
   }
 
   onDestoryed(): void {
     if (this.client) {
-      this.client.destroy();
       this.client = null;
-
       super.onDestoryed();
     }
   }

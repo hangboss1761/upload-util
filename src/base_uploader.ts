@@ -53,6 +53,7 @@ export class BaseUploader extends EventEmitter {
   }
 
   onDestoryed() {
+    console.log('[Uploader] destory connect.');
     this.emit('upload:destroy');
   }
 
