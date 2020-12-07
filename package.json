@@ -1,8 +1,9 @@
 {
-  "name": "file-upload-util",
-  "version": "1.0.0",
-  "description": "FE cli",
+  "name": "node-upload-util",
+  "version": "0.0.1",
+  "description": "A node upload util, Support ftp and sftp",
   "main": "dist/index.js",
+  "files": ["bin", "dist"],
   "scripts": {
     "commit": "yarn lint && git-cz",
     "prebuild": "rimraf dist",
