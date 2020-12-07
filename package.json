@@ -18,6 +18,17 @@
   "bin": {
     "upload": "bin/index.js"
   },
+  "keywords": [
+    "cli",
+    "upload"
+  ],
+  "author": "hangboss",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hangboss1761/upload-util"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/hangboss1761/upload-util#readme",
   "config": {
     "commitizen": {
       "path": "node_modules/cz-customizable"
@@ -26,12 +37,6 @@
   "engines": {
     "node": ">=10"
   },
-  "keywords": [
-    "cli",
-    "upload"
-  ],
-  "author": "郭宇航54042",
-  "license": "ISC",
   "dependencies": {
     "chalk": "^3.0.0",
     "commander": "^4.1.1",
