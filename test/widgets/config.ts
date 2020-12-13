@@ -1,11 +1,10 @@
 const ftpConfig = {
-  host: '47.107.157.97',
+  host: '192.168.43.140',
   port: 21,
-  user: 'ftp',
-  password: 'Admin@123',
-  files: [''],
-  // rootPath: '/',
-  destRootPath: '/gyh/sftp'
+  user: '',
+  password: '',
+  files: ['test'],
+  destRootPath: '/gyh/ftp'
 };
 
 const sftpConfig = {
@@ -14,7 +13,6 @@ const sftpConfig = {
   user: 'sftp',
   password: 'Admin@123',
   files: ['test'],
-  // rootPath: '/',
   destRootPath: '/gyh/sftp'
 };
 

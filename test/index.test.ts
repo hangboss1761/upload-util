@@ -1,9 +1,9 @@
 import { run } from '../src/index';
-import { sftpConfig } from './widgets/config';
+import { config } from './widgets/config';
 
 describe('Upload', () => {
   test('run upload', async (done) => {
-    await expect(run({sftp: sftpConfig})).resolves.toBeUndefined();
+    await expect(run(config)).resolves.toBeUndefined();
     done();
   });
 });

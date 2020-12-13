@@ -14,3 +14,5 @@ export interface Config {
   ftp?: Options;
   sftp?: Options;
 }
+
+export type UploaderType = 'ftp' | 'sftp';

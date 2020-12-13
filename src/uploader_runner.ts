@@ -8,16 +8,16 @@ export class UploaderRunner {
     this.uploaderMap = new Map<string, Uploader>();
   }
 
-  register(name: string, uploader: Uploader) {
+  register(name: string, uploader: Uploader): void {
     this.uploaderMap.set(name, uploader);
     fromEvent<Uploader>(uploader, 'upload:destroy').subscribe(() => this.unregister(name));
   }
 
-  unregister(name: string) {
+  unregister(name: string): void {
     this.uploaderMap.delete(name);
   }
 
-  async start() {
+  async start(): Promise<void> {
     try {
       for (const [, uploader] of this.uploaderMap) {
         await uploader.connect();

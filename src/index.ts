@@ -1,10 +1,12 @@
 import { fromEvent } from 'rxjs';
 import { Options, Config } from './interface/interface';
+import { Uploader } from './interface/common';
 import { FtpUploader } from './ftp_uploader';
 import { SftpUploader } from './sftp_uploader';
 import { UploaderRunner } from './uploader_runner';
+import { logger } from './log'
 
-const uploadFactory = (constructor, options: Options) => {
+const uploadFactory = (constructor, options: Options): Uploader => {
   const upload = new constructor(options);
   let successFileCount = 0;
 
@@ -14,13 +16,13 @@ const uploadFactory = (constructor, options: Options) => {
   fromEvent(upload, 'upload:file').subscribe(() => ++successFileCount);
   fromEvent(upload, 'upload:failure').subscribe(() => upload.destory());
   fromEvent(upload, 'upload:success').subscribe(() => {
-    console.log(`${successFileCount} files uploaded successfully`);
+    logger.info(`${successFileCount} files uploaded successfully`);
     upload.destory();
   });
   return upload;
 };
 
-export const run = (config: Config) => {
+export const run = (config: Config): Promise<void> => {
   const uploaderRunner = new UploaderRunner();
   if (config.ftp) {
     uploaderRunner.register('ftp', uploadFactory(FtpUploader, config.ftp));

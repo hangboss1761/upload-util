@@ -1,37 +1,40 @@
 import * as Client from 'ftp';
 import * as fs from 'fs';
-import * as path from 'path';
 import { fromEvent } from 'rxjs';
 import { BaseUploader } from './base_uploader';
+import { parseFiles, getOriginPath, getDestPath } from './util';
 import { Options } from './interface/interface';
-import { parseFiles } from './util';
 
 export class FtpUploader extends BaseUploader {
   client: Client;
 
-  initOptions(options: Options) {
-    this.options = options;
+  constructor(options: Options) {
+    super(options);
+    this.uploadType = 'ftp';
   }
 
-  connect(): Promise<void> {
-    return new Promise((resolve) => {
-      this.client = new Client();
+  private ftpConnect(): Promise<Client> {
+    return new Promise((resolve, reject) => {
+      const client = new Client();
 
-      this.client.connect({
+      client.connect({
         host: this.options.host,
         port: this.options.port,
         user: this.options.user,
         password: this.options.password
       });
 
-      fromEvent(this.client, 'ready').subscribe(() => {
-        this.onReady();
-        resolve();
+      fromEvent(client, 'ready').subscribe(() => {
+        resolve(client);
       });
-      fromEvent(this.client, 'error').subscribe((e: string) => {
-        throw new Error(e);
+      fromEvent(client, 'error').subscribe((e: string) => {
+        reject(e);
       });
     });
+  }
+
+  async connect(): Promise<void> {
+    await super.connect(this.ftpConnect.bind(this));
   }
 
   /**
@@ -40,8 +43,9 @@ export class FtpUploader extends BaseUploader {
    * @param destPath 目标路径
    */
   private upload(filePath: string, destPath: string): Promise<string> {
+    // todo: upload逻辑待优化
     return new Promise((resolve, reject) => {
-      const clientCb = (error) => {
+      const clientCb = (error: Error): void => {
         if (error) {
           reject(error);
         } else {
@@ -58,28 +62,30 @@ export class FtpUploader extends BaseUploader {
   }
 
   /**
-   * 依次上传所有文件
+   * 上传所有文件
    */
   async startUpload(): Promise<void> {
-    try {
-      const parsedFiles = parseFiles(this.options.files);
-      const getRealPath = (filePath: string) => path.join(this.options.rootPath || process.cwd(), filePath);
-      const getDestPath = (filePath: string) => path.posix.join(this.options.destRootPath, filePath);
+    const parsedFiles = parseFiles(this.options.files);
+    const fileUpladMap = parsedFiles.map(async (filePath) => {
+      await this.upload(
+        getOriginPath(filePath, this.options.rootPath),
+        getDestPath(filePath, this.options.destRootPath)
+      );
+      this.onFileUpload(filePath, parsedFiles);
+    });
 
-      this.onStart(parsedFiles);
+    this.onStart(parsedFiles);
 
-      // 串行上传所有文件
-      for (const filePath of parsedFiles) {
-        await this.upload(getRealPath(filePath), getDestPath(filePath));
-        this.onFileUpload(filePath, parsedFiles);
-      }
-
-      this.client.destroy();
-      this.onSuccess(parsedFiles);
-    } catch (error) {
-      this.client.destroy();
-      this.onFailure(error);
-    }
+    // 并行上传
+    await Promise.all(fileUpladMap)
+      .then(() => {
+        this.client.destroy();
+        this.onSuccess(parsedFiles);
+      })
+      .catch((e) => {
+        this.client.destroy();
+        this.onFailure(e);
+      });
   }
 
   onDestoryed(): void {

@@ -1,30 +1,32 @@
 import * as Client from 'ssh2-sftp-client';
 import * as fs from 'fs';
-import * as path from 'path';
 import { BaseUploader } from './base_uploader';
+import { parseFiles, getOriginPath, getDestPath } from './util';
 import { Options } from './interface/interface';
-import { parseFiles } from './util';
 
 export class SftpUploader extends BaseUploader {
   client: Client;
 
-  initOptions(options: Options) {
-    this.options = options;
+  constructor(options: Options) {
+    super(options);
+    this.uploadType = 'sftp';
   }
 
-  async connect() {
-    try {
-      this.client = new Client();
-      await this.client.connect({
-        host: this.options.host,
-        port: this.options.port,
-        username: this.options.user,
-        password: this.options.password
-      });
-      this.onReady();
-    } catch (e) {
-      throw new Error(e);
-    }
+  private async sftpConnect(): Promise<Client> {
+    const client = new Client();
+
+    await client.connect({
+      host: this.options.host,
+      port: this.options.port,
+      username: this.options.user,
+      password: this.options.password
+    });
+
+    return client;
+  }
+
+  async connect(): Promise<void> {
+    await super.connect(this.sftpConnect.bind(this));
   }
 
   /**
@@ -45,14 +47,12 @@ export class SftpUploader extends BaseUploader {
   async startUpload(): Promise<void> {
     try {
       const parsedFiles = parseFiles(this.options.files);
-      const getRealPath = (filePath: string) => path.join(this.options.rootPath || process.cwd(), filePath);
-      const getDestPath = (filePath: string) => path.posix.join(this.options.destRootPath, filePath);
 
       this.onStart(parsedFiles);
 
       // 串行上传所有文件
       for (const filePath of parsedFiles) {
-        await this.upload(getRealPath(filePath), getDestPath(filePath));
+        await this.upload(getOriginPath(filePath, this.options.rootPath), getDestPath(filePath, this.options.destRootPath));
         this.onFileUpload(filePath, parsedFiles);
       }
 
@@ -64,7 +64,7 @@ export class SftpUploader extends BaseUploader {
     }
   }
 
-  onDestoryed() {
+  onDestoryed(): void {
     if (this.client) {
       this.client = null;
     }
