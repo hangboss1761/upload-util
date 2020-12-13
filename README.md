@@ -1,12 +1,11 @@
 # 文件上传
-
+[![Build Status](https://travis-ci.com/hangboss1761/upload-util.svg?branch=master)](https://travis-ci.com/hangboss1761/upload-util) [![Coverage Status](https://coveralls.io/repos/github/hangboss1761/upload-util/badge.svg)](https://coveralls.io/github/hangboss1761/upload-util) [![GitHub license](https://img.shields.io/github/license/hangboss1761/upload-util)](https://github.com/hangboss1761/upload-util)
 ## Install
 
-**暂未发包**，以下仅供参考
 ```bash
-yarn add file-upload-util
+yarn add node-upload-util
 # or
-yarn add global file-upload-util
+yarn add global node-upload-util
 ```
 ## Usage
 
@@ -17,7 +16,7 @@ yarn add global file-upload-util
 - Import in your code
 
 ```js
-import { run } from 'file-upload-util';
+import { run } from 'node-upload-util';
 
 run({
   ftp: {
@@ -45,7 +44,7 @@ run({
 
 ```bash
 # clone code
-git clone xxxx
+git clone https://github.com/hangboss1761/upload-util
 
 cd upload-util
 

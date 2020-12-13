@@ -1,8 +1,9 @@
 {
-  "name": "file-upload-util",
-  "version": "1.0.0",
-  "description": "FE cli",
+  "name": "node-upload-util",
+  "version": "0.0.1",
+  "description": "A node upload util, Support ftp and sftp",
   "main": "dist/index.js",
+  "files": ["bin", "dist"],
   "scripts": {
     "commit": "yarn lint && git-cz",
     "prebuild": "rimraf dist",
@@ -12,11 +13,22 @@
     "lint-without-fix": "eslint src/**/* --ext .ts,.js",
     "test": "jest",
     "test:cover": "jest --coverage",
-    "coverall": "cat coverage/lcov.info | coveralls"
+    "coveralls": "cat coverage/lcov.info | coveralls"
   },
   "bin": {
     "upload": "bin/index.js"
   },
+  "keywords": [
+    "cli",
+    "upload"
+  ],
+  "author": "hangboss",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hangboss1761/upload-util"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/hangboss1761/upload-util#readme",
   "config": {
     "commitizen": {
       "path": "node_modules/cz-customizable"
@@ -25,15 +37,10 @@
   "engines": {
     "node": ">=10"
   },
-  "keywords": [
-    "cli",
-    "upload"
-  ],
-  "author": "郭宇航54042",
-  "license": "ISC",
   "dependencies": {
     "chalk": "^3.0.0",
     "commander": "^4.1.1",
+    "coveralls": "^3.1.0",
     "enquirer": "^2.3.6",
     "esm": "^3.2.25",
     "execa": "^4.0.0",
