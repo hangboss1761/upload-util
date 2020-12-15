@@ -1,7 +1,7 @@
 import * as Client from 'ssh2-sftp-client';
-import * as fs from 'fs';
 import { BaseUploader } from './base_uploader';
-import { parseFiles, getOriginPath, getDestPath } from './util';
+import { parseFiles, getOriginPath, getDestPath, isDirectory } from './widgets/util';
+import { uploadFn } from './widgets/upload';
 import { Options } from './interface/interface';
 
 export class SftpUploader extends BaseUploader {
@@ -35,10 +35,8 @@ export class SftpUploader extends BaseUploader {
    * @param destPath 目标路径
    */
   private upload(filePath: string, destPath: string): Promise<string> {
-    if (fs.statSync(filePath).isDirectory()) {
-      return this.client.mkdir(destPath, true);
-    }
-    return this.client.put(filePath, destPath);
+    const { mkdir, put } = this.client;
+    return uploadFn(isDirectory(filePath), mkdir, [destPath, true], put, [filePath, destPath]) as Promise<string>;
   }
 
   /**
@@ -52,7 +50,10 @@ export class SftpUploader extends BaseUploader {
 
       // 串行上传所有文件
       for (const filePath of parsedFiles) {
-        await this.upload(getOriginPath(filePath, this.options.rootPath), getDestPath(filePath, this.options.destRootPath));
+        await this.upload(
+          getOriginPath(filePath, this.options.rootPath),
+          getDestPath(filePath, this.options.destRootPath)
+        );
         this.onFileUpload(filePath, parsedFiles);
       }
 

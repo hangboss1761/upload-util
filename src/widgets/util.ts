@@ -36,3 +36,9 @@ export const getOriginPath = (filePath: string, rootPath?: string): string =>
  * @param destRootPath 目标服务器上的根路径
  */
 export const getDestPath = (filePath: string, destRootPath: string): string => path.posix.join(destRootPath, filePath);
+
+/**
+ * 判断文件路径是否为文件夹
+ * @param filePath 源文件路径
+ */
+export const isDirectory = (filePath: string): boolean => fs.statSync(filePath).isDirectory()

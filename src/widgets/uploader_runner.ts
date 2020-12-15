@@ -1,5 +1,5 @@
 import { fromEvent } from 'rxjs';
-import { Uploader } from './interface/common';
+import { Uploader } from '../interface/common';
 
 export class UploaderRunner {
   private uploaderMap: Map<string, Uploader>;

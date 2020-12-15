@@ -2,7 +2,7 @@ import * as Client from 'ftp';
 import * as fs from 'fs';
 import { fromEvent } from 'rxjs';
 import { BaseUploader } from './base_uploader';
-import { parseFiles, getOriginPath, getDestPath } from './util';
+import { parseFiles, getOriginPath, getDestPath } from './widgets/util';
 import { Options } from './interface/interface';
 
 export class FtpUploader extends BaseUploader {
@@ -43,7 +43,7 @@ export class FtpUploader extends BaseUploader {
    * @param destPath 目标路径
    */
   private upload(filePath: string, destPath: string): Promise<string> {
-    // todo: upload逻辑待优化
+    // TODO: upload逻辑待优化
     return new Promise((resolve, reject) => {
       const clientCb = (error: Error): void => {
         if (error) {

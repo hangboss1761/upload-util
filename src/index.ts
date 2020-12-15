@@ -3,8 +3,8 @@ import { Options, Config } from './interface/interface';
 import { Uploader } from './interface/common';
 import { FtpUploader } from './ftp_uploader';
 import { SftpUploader } from './sftp_uploader';
-import { UploaderRunner } from './uploader_runner';
-import { logger } from './log'
+import { UploaderRunner } from './widgets/uploader_runner';
+import { logger } from './widgets/log'
 
 const uploadFactory = (constructor, options: Options): Uploader => {
   const upload = new constructor(options);
@@ -22,7 +22,7 @@ const uploadFactory = (constructor, options: Options): Uploader => {
   return upload;
 };
 
-export const run = (config: Config): Promise<void> => {
+export const run = async (config: Config): Promise<void> => {
   const uploaderRunner = new UploaderRunner();
   if (config.ftp) {
     uploaderRunner.register('ftp', uploadFactory(FtpUploader, config.ftp));
@@ -32,7 +32,9 @@ export const run = (config: Config): Promise<void> => {
     uploaderRunner.register('sftp', uploadFactory(SftpUploader, config.sftp));
   }
 
-  return uploaderRunner.start().catch((e) => {
+  try {
+    return uploaderRunner.start();
+  } catch (e) {
     throw new Error(e);
-  });
+  }
 };

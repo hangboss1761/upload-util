@@ -1,12 +1,8 @@
 import { EventEmitter } from 'events';
 import { Options, UploaderType } from './interface/interface';
-import { logger } from './log';
+import { logger } from './widgets/log';
 
-const showOverrideTips = (method: string, namespace = 'Uploader'): void => {
-  throw new Error(`[${namespace}] Method: ${method} should be override`);
-};
-
-export class BaseUploader extends EventEmitter {
+export abstract class BaseUploader extends EventEmitter {
   options: Options;
 
   destoryed = false;
@@ -38,9 +34,7 @@ export class BaseUploader extends EventEmitter {
     this.emit('upload:ready');
   }
 
-  startUpload(): void {
-    showOverrideTips('startUpload');
-  }
+  abstract startUpload(): void
 
   onStart(files: string[]): void {
     logger.info(`[${this.uploadType} Uploader] start.`);
