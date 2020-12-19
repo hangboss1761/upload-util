@@ -1,18 +1,37 @@
 import * as Client from 'ssh2-sftp-client';
+import { Schema } from 'jsonschema';
 import { BaseUploader } from './base_uploader';
-import { parseFiles, getOriginPath, getDestPath, isDirectory } from './widgets/util';
+import {
+  parseFiles,
+  getOriginPath,
+  getDestPath,
+  isDirectory
+} from './widgets/util';
+import { logger } from './widgets/log';
+import { jsonschemaValid, optionsSchema, ValidResult } from './widgets/valid';
 import { uploadFn } from './widgets/upload';
 import { Options } from './interface/interface';
 
 export class SftpUploader extends BaseUploader {
-  client: Client;
+  protected client: Client;
 
   constructor(options: Options) {
     super(options);
     this.uploadType = 'sftp';
+    this.validInput(options, optionsSchema);
   }
 
-  private async sftpConnect(): Promise<Client> {
+  protected validInput(options: Options, schame: Schema): boolean {
+    const validResult: ValidResult = jsonschemaValid(options, schame);
+
+    if (!validResult.result) {
+      logger.error(`[${this.uploadType} Uploader] ${validResult.msg}`);
+      throw new Error(validResult.msg);
+    }
+    return true;
+  }
+
+  protected async connectFn(): Promise<Client> {
     const client = new Client();
 
     await client.connect({
@@ -25,10 +44,6 @@ export class SftpUploader extends BaseUploader {
     return client;
   }
 
-  async connect(): Promise<void> {
-    await super.connect(this.sftpConnect.bind(this));
-  }
-
   /**
    * 上传单个文件/目录到目标服务器
    * @param filePath local file path
@@ -36,13 +51,19 @@ export class SftpUploader extends BaseUploader {
    */
   private upload(filePath: string, destPath: string): Promise<string> {
     const { mkdir, put } = this.client;
-    return uploadFn(isDirectory(filePath), mkdir, [destPath, true], put, [filePath, destPath]) as Promise<string>;
+    return uploadFn(
+      isDirectory(filePath),
+      mkdir.bind(this.client),
+      [destPath, true],
+      put.bind(this.client),
+      [filePath, destPath]
+    ) as Promise<string>;
   }
 
   /**
    * 依次上传所有文件
    */
-  async startUpload(): Promise<void> {
+  public async startUpload(): Promise<void> {
     try {
       const parsedFiles = parseFiles(this.options.files);
 
@@ -65,7 +86,7 @@ export class SftpUploader extends BaseUploader {
     }
   }
 
-  onDestoryed(): void {
+  protected onDestoryed(): void {
     if (this.client) {
       this.client = null;
     }

@@ -4,14 +4,14 @@ import { Uploader } from './interface/common';
 import { FtpUploader } from './ftp_uploader';
 import { SftpUploader } from './sftp_uploader';
 import { UploaderRunner } from './widgets/uploader_runner';
-import { logger } from './widgets/log'
+import { logger } from './widgets/log';
 
 const uploadFactory = (constructor, options: Options): Uploader => {
   const upload = new constructor(options);
   let successFileCount = 0;
 
   fromEvent(upload, 'upload:start').subscribe(([, files]) =>
-    console.log(`${files.length} files waiting to be uploaded`)
+    logger.info(`${files.length} files waiting to be uploaded`)
   );
   fromEvent(upload, 'upload:file').subscribe(() => ++successFileCount);
   fromEvent(upload, 'upload:failure').subscribe(() => upload.destory());

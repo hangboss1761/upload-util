@@ -29,6 +29,7 @@ module.exports = {
     'no-unused-expressions': 0,
     'global-require': 0,
     'class-methods-use-this': 0,
+    'max-len': ['error', { "ignoreComments": true, "tabWidth": 2 }],
     // 禁止声明与外层作用域的变量同名
     'no-shadow': 0,
     // 'generator-star-spacing': 0,
@@ -39,9 +40,6 @@ module.exports = {
     'no-await-in-loop': 0,
     'no-plusplus': 0,
     // 'no-debugger': 0,
-    // 一行的最大长度
-    'max-len': [2, 130],
-
     // "import/extensions": 0,
     'import/prefer-default-export': 0,
     'import/no-dynamic-require': 0,

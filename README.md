@@ -73,3 +73,7 @@ yarn test
 # or
 yarn test:cover
 ```
+
+## 单测覆盖率
+
+![cover](./screenshot/cover.jpg)

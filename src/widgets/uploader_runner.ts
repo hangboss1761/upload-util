@@ -10,7 +10,9 @@ export class UploaderRunner {
 
   register(name: string, uploader: Uploader): void {
     this.uploaderMap.set(name, uploader);
-    fromEvent<Uploader>(uploader, 'upload:destroy').subscribe(() => this.unregister(name));
+    fromEvent<Uploader>(uploader, 'upload:destroy').subscribe(() =>
+      this.unregister(name)
+    );
   }
 
   unregister(name: string): void {

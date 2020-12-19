@@ -1,71 +1,81 @@
 import { EventEmitter } from 'events';
+import { Schema } from 'jsonschema';
 import { Options, UploaderType } from './interface/interface';
 import { logger } from './widgets/log';
 
 export abstract class BaseUploader extends EventEmitter {
-  options: Options;
+  protected options: Options;
 
-  destoryed = false;
+  protected destoryed = false;
 
-  client: any;
+  protected client: any;
 
-  uploadType: UploaderType;
+  protected uploadType: UploaderType;
 
   constructor(options: Options) {
     super();
     this.initOptions(options);
   }
 
-  initOptions(options: Options): void {
+  protected initOptions(options: Options): void {
+    logger.trace(options);
     this.options = options;
   }
 
-  async connect(connectFn): Promise<void> {
+  protected abstract validInput(options: Options, schame: Schema): boolean;
+
+  protected abstract connectFn(): Promise<any>;
+
+  public async connect(): Promise<void> {
     try {
-      this.client = await connectFn();
+      this.client = await this.connectFn();
       this.onReady();
     } catch (e) {
       throw new Error(e);
     }
   }
 
-  onReady(): void {
+  protected onReady(): void {
     logger.info(`[${this.uploadType} Uploader] connect ready.`);
     this.emit('upload:ready');
   }
 
-  abstract startUpload(): void
+  public abstract startUpload(): void;
 
-  onStart(files: string[]): void {
+  protected onStart(files: string[]): void {
     logger.info(`[${this.uploadType} Uploader] start.`);
     this.emit('upload:start', this.options, files);
   }
 
-  onFileUpload(filePath: string, files: string[]): void {
-    logger.info(`[${this.uploadType} Uploader] file: ${filePath} upload successfully \n`);
+  protected onFileUpload(filePath: string, files: string[]): void {
+    logger.info(
+      `[${this.uploadType} Uploader] file: ${filePath} upload successfully \n`
+    );
     this.emit('upload:file', this.options, files, filePath);
   }
 
-  onSuccess(files: string[]): void {
-    logger.info(`[${this.uploadType} Uploader] all files uploaded successfully \n`);
+  protected onSuccess(files: string[]): void {
+    logger.info(
+      `[${this.uploadType} Uploader] all files uploaded successfully \n`
+    );
     this.emit('upload:success', this.options, files);
   }
 
-  onFailure(e: any): void {
+  protected onFailure(e: any): void {
     logger.error(`${this.uploadType} [Uploader] file upload error.`, e);
     this.emit('upload:failure', this.options, e);
   }
 
-  onDestoryed(): void {
+  protected onDestoryed(): void {
     logger.info(`[${this.uploadType} Uploader] destory connect.`);
     this.emit('upload:destroy');
   }
 
-  destory(): void {
+  public destory(): void {
     if (!this.destoryed) {
       this.options = null;
-      this.removeAllListeners();
       this.onDestoryed();
+      this.removeAllListeners();
       this.destoryed = true;
     }
   }

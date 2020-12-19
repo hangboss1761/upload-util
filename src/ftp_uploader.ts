@@ -1,19 +1,38 @@
 import * as Client from 'ftp';
-import * as fs from 'fs';
+import { Schema } from 'jsonschema';
 import { fromEvent } from 'rxjs';
 import { BaseUploader } from './base_uploader';
-import { parseFiles, getOriginPath, getDestPath } from './widgets/util';
+import {
+  parseFiles,
+  getOriginPath,
+  getDestPath,
+  isDirectory
+} from './widgets/util';
+import { logger } from './widgets/log';
+import { jsonschemaValid, optionsSchema, ValidResult } from './widgets/valid';
+import { uploadFn } from './widgets/upload';
 import { Options } from './interface/interface';
 
 export class FtpUploader extends BaseUploader {
-  client: Client;
+  protected client: Client;
 
   constructor(options: Options) {
     super(options);
     this.uploadType = 'ftp';
+    this.validInput(options, optionsSchema);
   }
 
-  private ftpConnect(): Promise<Client> {
+  protected validInput(options: Options, schame: Schema): boolean {
+    const validResult: ValidResult = jsonschemaValid(options, schame);
+
+    if (!validResult.result) {
+      logger.error(`[${this.uploadType} Uploader] ${validResult.msg}`);
+      throw new Error();
+    }
+    return true;
+  }
+
+  protected connectFn(): Promise<Client> {
     return new Promise((resolve, reject) => {
       const client = new Client();
 
@@ -33,38 +52,26 @@ export class FtpUploader extends BaseUploader {
     });
   }
 
-  async connect(): Promise<void> {
-    await super.connect(this.ftpConnect.bind(this));
-  }
-
   /**
    * 上传单个文件/目录到目标服务器
    * @param filePath local file path
    * @param destPath 目标路径
    */
   private upload(filePath: string, destPath: string): Promise<string> {
-    // TODO: upload逻辑待优化
-    return new Promise((resolve, reject) => {
-      const clientCb = (error: Error): void => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(filePath);
-        }
-      };
-
-      if (fs.statSync(filePath).isDirectory()) {
-        this.client.mkdir(destPath, true, clientCb);
-      } else {
-        this.client.put(fs.readFileSync(filePath), destPath, false, clientCb);
-      }
-    });
+    const { mkdir, put } = this.client;
+    return uploadFn(
+      isDirectory(filePath),
+      mkdir.bind(this.client),
+      [destPath, true],
+      put.bind(this.client),
+      [filePath, destPath, false]
+    ) as Promise<string>;
   }
 
   /**
    * 上传所有文件
    */
-  async startUpload(): Promise<void> {
+  public async startUpload(): Promise<void> {
     const parsedFiles = parseFiles(this.options.files);
     const fileUpladMap = parsedFiles.map(async (filePath) => {
       await this.upload(
@@ -88,7 +95,7 @@ export class FtpUploader extends BaseUploader {
       });
   }
 
-  onDestoryed(): void {
+  protected onDestoryed(): void {
     if (this.client) {
       this.client = null;
       super.onDestoryed();

@@ -1,5 +1,3 @@
-
-
 export interface Options {
   host: string;
   port: number;
