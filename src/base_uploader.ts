@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { Schema } from 'jsonschema';
+import { parseFiles } from './widgets/util';
 import { Options, UploaderType } from './interface/interface';
 import { logger } from './widgets/log';
 
@@ -26,6 +27,8 @@ export abstract class BaseUploader extends EventEmitter {
 
   protected abstract connectFn(): Promise<any>;
 
+  protected abstract upload(filePath: string): Promise<any>;
+
   public async connect(): Promise<void> {
     try {
       this.client = await this.connectFn();
@@ -40,7 +43,44 @@ export abstract class BaseUploader extends EventEmitter {
     this.emit('upload:ready');
   }
 
-  public abstract startUpload(): void;
+  protected async parallelUpload(parsedFiles: string[]): Promise<void> {
+    const getFileUpladMap = (): Promise<void>[] =>
+      parsedFiles.map(async (filePath) => {
+        await this.upload(filePath);
+        this.onFileUpload(filePath, parsedFiles);
+      });
+
+    await Promise.all(getFileUpladMap())
+      .then(() => {
+        this.onSuccess(parsedFiles);
+      })
+      .catch((e) => {
+        this.onFailure(e);
+      });
+  }
+
+  protected async serialUpload(parsedFiles: string[]): Promise<void> {
+    try {
+      for (const filePath of parsedFiles) {
+        await this.upload(filePath);
+        this.onFileUpload(filePath, parsedFiles);
+      }
+      this.onSuccess(parsedFiles);
+    } catch (e) {
+      this.onFailure(e);
+    }
+  }
+
+  public async startUpload(): Promise<void> {
+    const parsedFiles = parseFiles(this.options.files);
+    const serialOrParallelUpload = this.options.parallel
+      ? this.parallelUpload.bind(this, parsedFiles)
+      : this.serialUpload.bind(this, parsedFiles);
+
+    this.onStart(parsedFiles);
+
+    await serialOrParallelUpload();
+  }
 
   protected onStart(files: string[]): void {
     logger.info(`[${this.uploadType} Uploader] start.`);

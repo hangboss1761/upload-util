@@ -1,22 +1,25 @@
-const ftpConfig = {
-  host: '172.23.193.62',
+import { Options, Config } from '../../src/interface/interface';
+const ftpConfig: Options = {
+  host: '192.168.0.107',
   port: 21,
   user: '',
   password: '',
-  files: ['test', 'package.json'],
-  destRootPath: '/gyh/ftp'
+  files: ['demo.mkv', 'test', 'package.json'],
+  destRootPath: '/gyh/ftp',
+  parallel: true
 };
 
-const sftpConfig = {
+const sftpConfig: Options = {
   host: '47.56.223.228',
   port: 22,
   user: 'root',
   password: '2020@host',
-  files: ['test', 'package.json'],
-  destRootPath: '/gyh/sftp'
+  files: ['demo.exe', 'test', 'package.json'],
+  destRootPath: '/gyh/sftp',
+  parallel: true
 };
 
-const config = {
+const config: Config = {
   ftp: ftpConfig,
   sftp: sftpConfig
 };

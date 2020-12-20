@@ -8,16 +8,19 @@ describe('Uploader Ftp', () => {
     const mockFn = jest.fn(() => {});
     const uploader = new FtpUploader(ftpConfig);
 
-    await expect(uploader.connect()).resolves.toBeUndefined();
-    await expect(uploader.startUpload()).resolves.toBeUndefined();
-
     uploader.on('upload:ready', mockFn);
     uploader.on('upload:start', mockFn);
     uploader.on('upload:success', () => {
-      uploader.destory();
       mockFn();
+      uploader.destory();
     });
-    uploader.on('upload:destroy', () => expect(mockFn.mock.calls.length).toBe(3));
+    uploader.on('upload:destroy', () =>
+      expect(mockFn.mock.calls.length).toBe(3)
+    );
+
+    await expect(uploader.connect()).resolves.toBeUndefined();
+    await expect(uploader.startUpload()).resolves.toBeUndefined();
+
     done();
   });
 });

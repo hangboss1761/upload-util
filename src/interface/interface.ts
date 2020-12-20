@@ -6,6 +6,7 @@ export interface Options {
   files: string[];
   destRootPath: string;
   rootPath?: string;
+  parallel?: boolean;
 }
 
 export interface Config {

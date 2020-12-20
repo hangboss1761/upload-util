@@ -1,13 +1,9 @@
 import * as Client from 'ftp';
+import * as util from 'util';
 import { Schema } from 'jsonschema';
 import { fromEvent } from 'rxjs';
 import { BaseUploader } from './base_uploader';
-import {
-  parseFiles,
-  getOriginPath,
-  getDestPath,
-  isDirectory
-} from './widgets/util';
+import { getOriginPath, getDestPath, isDirectory } from './widgets/util';
 import { logger } from './widgets/log';
 import { jsonschemaValid, optionsSchema, ValidResult } from './widgets/valid';
 import { uploadFn } from './widgets/upload';
@@ -54,49 +50,25 @@ export class FtpUploader extends BaseUploader {
 
   /**
    * 上传单个文件/目录到目标服务器
-   * @param filePath local file path
-   * @param destPath 目标路径
+   * @param filePath file path
    */
-  private upload(filePath: string, destPath: string): Promise<string> {
+  protected upload(filePath: string): Promise<string> {
     const { mkdir, put } = this.client;
+    const localPath = getOriginPath(filePath, this.options.rootPath);
+    const destPath = getDestPath(filePath, this.options.destRootPath);
+
     return uploadFn(
-      isDirectory(filePath),
-      mkdir.bind(this.client),
+      isDirectory(localPath),
+      util.promisify(mkdir.bind(this.client)),
       [destPath, true],
-      put.bind(this.client),
-      [filePath, destPath, false]
+      util.promisify(put.bind(this.client)),
+      [localPath, destPath, false]
     ) as Promise<string>;
-  }
-
-  /**
-   * 上传所有文件
-   */
-  public async startUpload(): Promise<void> {
-    const parsedFiles = parseFiles(this.options.files);
-    const fileUpladMap = parsedFiles.map(async (filePath) => {
-      await this.upload(
-        getOriginPath(filePath, this.options.rootPath),
-        getDestPath(filePath, this.options.destRootPath)
-      );
-      this.onFileUpload(filePath, parsedFiles);
-    });
-
-    this.onStart(parsedFiles);
-
-    // 并行上传
-    await Promise.all(fileUpladMap)
-      .then(() => {
-        this.client.destroy();
-        this.onSuccess(parsedFiles);
-      })
-      .catch((e) => {
-        this.client.destroy();
-        this.onFailure(e);
-      });
   }
 
   protected onDestoryed(): void {
     if (this.client) {
+      this.client.destroy();
       this.client = null;
       super.onDestoryed();
     }

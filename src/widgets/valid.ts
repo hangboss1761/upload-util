@@ -20,7 +20,7 @@ export const jsonschemaValid = <T>(
   if (validatorResultErr.length) {
     result = {
       result: false,
-      msg: `\n${  validatorResultErr.map((item) => item.stack).join('\n')}`
+      msg: `\n${validatorResultErr.map((item) => item.stack).join('\n')}`
     };
   }
 
