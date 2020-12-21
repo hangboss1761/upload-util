@@ -1,4 +1,5 @@
 import { Options, Config } from '../../src/interface/interface';
+
 const ftpConfig: Options = {
   host: '192.168.0.107',
   port: 21,
@@ -6,7 +7,8 @@ const ftpConfig: Options = {
   password: '',
   files: ['demo.mkv', 'test', 'package.json'],
   destRootPath: '/gyh/ftp',
-  parallel: true
+  parallel: true,
+  retry: true
 };
 
 const sftpConfig: Options = {
@@ -20,8 +22,14 @@ const sftpConfig: Options = {
 };
 
 const config: Config = {
-  ftp: ftpConfig,
-  sftp: sftpConfig
+  ftp: {
+    ...ftpConfig,
+    files: ['package.json']
+  },
+  sftp: {
+    ...sftpConfig,
+    files: ['package.json']
+  }
 };
 
 export { config, ftpConfig, sftpConfig };

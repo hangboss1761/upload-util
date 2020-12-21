@@ -1,6 +1,8 @@
 import { EventEmitter } from 'events';
+import { from } from 'rxjs';
+import { retry } from 'rxjs/operators';
 import { Schema } from 'jsonschema';
-import { parseFiles } from './widgets/util';
+import { parseFiles } from './widgets/file';
 import { Options, UploaderType } from './interface/interface';
 import { logger } from './widgets/log';
 
@@ -29,13 +31,27 @@ export abstract class BaseUploader extends EventEmitter {
 
   protected abstract upload(filePath: string): Promise<any>;
 
+  // TODO: 补充单测
+  // TODO: 补充注释
   public async connect(): Promise<void> {
-    try {
-      this.client = await this.connectFn();
-      this.onReady();
-    } catch (e) {
-      throw new Error(e);
-    }
+    const retryTimes = this.options.retry ? this.options.retryTimes || 3 : 0;
+
+    await from(this.connectFn())
+      .pipe(retry(retryTimes))
+      .toPromise()
+      .then((val) => {
+        this.client = val;
+        this.onReady();
+      })
+      .catch((e) => {
+        if (retryTimes) {
+          logger.error(
+            `[${this.uploadType} Uploader] connect error! Retried ${retryTimes} times then quit`
+          );
+          throw new Error(e);
+        }
+        throw new Error(e);
+      });
   }
 
   protected onReady(): void {

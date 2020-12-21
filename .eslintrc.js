@@ -29,7 +29,15 @@ module.exports = {
     'no-unused-expressions': 0,
     'global-require': 0,
     'class-methods-use-this': 0,
-    'max-len': ['error', { "ignoreComments": true, "tabWidth": 2 }],
+    'max-len': [
+      'error',
+      {
+        ignoreComments: true,
+        tabWidth: 2,
+        ignoreUrls: true,
+        ignoreTemplateLiterals: true
+      }
+    ],
     // 禁止声明与外层作用域的变量同名
     'no-shadow': 0,
     // 'generator-star-spacing': 0,

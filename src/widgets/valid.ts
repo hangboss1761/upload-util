@@ -53,6 +53,15 @@ export const optionsSchema: Schema = {
     },
     rootPath: {
       type: 'string'
+    },
+    parallel: {
+      type: 'boolean'
+    },
+    retry: {
+      type: 'boolean'
+    },
+    retryTimes: {
+      type: 'boolean'
     }
   },
   required: ['host', 'port', 'user', 'password', 'files', 'destRootPath']

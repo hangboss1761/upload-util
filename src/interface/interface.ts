@@ -7,6 +7,8 @@ export interface Options {
   destRootPath: string;
   rootPath?: string;
   parallel?: boolean;
+  retry?: boolean;
+  retryTimes?: number;
 }
 
 export interface Config {

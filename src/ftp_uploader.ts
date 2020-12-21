@@ -3,7 +3,7 @@ import * as util from 'util';
 import { Schema } from 'jsonschema';
 import { fromEvent } from 'rxjs';
 import { BaseUploader } from './base_uploader';
-import { getOriginPath, getDestPath, isDirectory } from './widgets/util';
+import { getOriginPath, getDestPath, isDirectory } from './widgets/file';
 import { logger } from './widgets/log';
 import { jsonschemaValid, optionsSchema, ValidResult } from './widgets/valid';
 import { uploadFn } from './widgets/upload';
