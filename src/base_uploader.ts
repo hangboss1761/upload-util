@@ -33,6 +33,7 @@ export abstract class BaseUploader extends EventEmitter {
 
   // TODO: 补充单测
   // TODO: 补充注释
+  // TODO: 补充rxjs方法的类型声明
   public async connect(): Promise<void> {
     const retryTimes = this.options.retry ? this.options.retryTimes || 3 : 0;
 
@@ -44,12 +45,11 @@ export abstract class BaseUploader extends EventEmitter {
         this.onReady();
       })
       .catch((e) => {
-        if (retryTimes) {
+        if (retryTimes)
           logger.error(
             `[${this.uploadType} Uploader] connect error! Retried ${retryTimes} times then quit`
           );
-          throw new Error(e);
-        }
+
         throw new Error(e);
       });
   }
