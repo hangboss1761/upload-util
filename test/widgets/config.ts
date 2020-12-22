@@ -11,14 +11,36 @@ const ftpConfig: Options = {
   retry: true
 };
 
+const retryFtpConfig: Options = {
+  host: '192.168.0.0', // error host
+  port: 21,
+  user: '',
+  password: '',
+  files: ['test', 'package.json'],
+  destRootPath: '/gyh/ftp',
+  parallel: true,
+  retry: true,
+  retryTimes: 1
+};
+
 const sftpConfig: Options = {
   host: '47.56.223.228',
   port: 22,
   user: 'root',
   password: '2020@host',
   files: ['demo.exe', 'test', 'package.json'],
+  destRootPath: '/gyh/sftp'
+};
+
+const retrySftpConfig: Options = {
+  host: '47.56.223.111',
+  port: 22,
+  user: 'root',
+  password: '2020@host',
+  files: ['demo.exe', 'test', 'package.json'],
   destRootPath: '/gyh/sftp',
-  parallel: true
+  retry: true,
+  retryTimes: 1
 };
 
 const config: Config = {
@@ -32,4 +54,4 @@ const config: Config = {
   }
 };
 
-export { config, ftpConfig, sftpConfig };
+export { config, ftpConfig, retryFtpConfig, sftpConfig, retrySftpConfig };

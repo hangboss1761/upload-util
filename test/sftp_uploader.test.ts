@@ -1,5 +1,5 @@
 import { SftpUploader } from '../src/sftp_uploader';
-import { sftpConfig } from './widgets/config';
+import { sftpConfig, retrySftpConfig } from './widgets/config';
 describe('Uploader Sftp', () => {
   test('run uploader', async (done) => {
     const mockFn = jest.fn(() => {});
@@ -18,6 +18,19 @@ describe('Uploader Sftp', () => {
     await expect(uploader.connect()).resolves.toBeUndefined();
     await expect(uploader.startUpload()).resolves.toBeUndefined();
 
+    done();
+  });
+
+  test.only('sftp connect retry', async (done) => {
+    // 连接会失败，并且失败后会重试1次,总共会触发2次upload:connecting事件
+    const uploader = new SftpUploader(retrySftpConfig);
+    const mockFn = jest.fn(() => {});
+
+    uploader.on('upload:connecting', mockFn);
+
+    await expect(uploader.connect()).rejects.toThrow();
+
+    expect(mockFn.mock.calls.length).toBe(2);
     done();
   });
 });

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { from } from 'rxjs';
-import { retry } from 'rxjs/operators';
+import { retry, switchMap } from 'rxjs/operators';
 import { Schema } from 'jsonschema';
 import { parseFiles } from './widgets/file';
 import { Options, UploaderType } from './interface/interface';
@@ -37,8 +37,11 @@ export abstract class BaseUploader extends EventEmitter {
   public async connect(): Promise<void> {
     const retryTimes = this.options.retry ? this.options.retryTimes || 3 : 0;
 
-    await from(this.connectFn())
-      .pipe(retry(retryTimes))
+    await from(Promise.resolve(1))
+      .pipe(
+        switchMap(() => this.connectFn()),
+        retry(retryTimes)
+      )
       .toPromise()
       .then((val) => {
         this.client = val;
@@ -101,6 +104,11 @@ export abstract class BaseUploader extends EventEmitter {
   protected onStart(files: string[]): void {
     logger.info(`[${this.uploadType} Uploader] start.`);
     this.emit('upload:start', this.options, files);
+  }
+
+  protected onConnecting(): void {
+    logger.info(`[${this.uploadType} Uploader] on connecting.`);
+    this.emit('upload:connecting');
   }
 
   protected onFileUpload(filePath: string, files: string[]): void {

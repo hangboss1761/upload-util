@@ -1,7 +1,5 @@
 import { FtpUploader } from '../src/ftp_uploader';
-import { ftpConfig } from './widgets/config';
-
-jest.setTimeout(30000);
+import { ftpConfig, retryFtpConfig } from './widgets/config';
 
 describe('Uploader Ftp', () => {
   test('run uploader', async (done) => {
@@ -21,6 +19,19 @@ describe('Uploader Ftp', () => {
     await expect(uploader.connect()).resolves.toBeUndefined();
     await expect(uploader.startUpload()).resolves.toBeUndefined();
 
+    done();
+  });
+
+  test('ftp connect retry', async (done) => {
+    // 连接会失败，并且失败后会重试1次,总共会触发2次upload:connecting事件
+    const uploader = new FtpUploader(retryFtpConfig);
+    const mockFn = jest.fn(() => {});
+
+    uploader.on('upload:connecting', mockFn);
+
+    await expect(uploader.connect()).rejects.toThrow();
+
+    expect(mockFn.mock.calls.length).toBe(2);
     done();
   });
 });

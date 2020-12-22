@@ -29,6 +29,7 @@ export class SftpUploader extends BaseUploader {
   protected async connectFn(): Promise<Client> {
     const client = new Client();
 
+    this.onConnecting();
     await client.connect({
       host: this.options.host,
       port: this.options.port,

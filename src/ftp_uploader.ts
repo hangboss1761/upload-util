@@ -32,6 +32,7 @@ export class FtpUploader extends BaseUploader {
     return new Promise((resolve, reject) => {
       const client = new Client();
 
+      this.onConnecting();
       client.connect({
         host: this.options.host,
         port: this.options.port,

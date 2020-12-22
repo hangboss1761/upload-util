@@ -61,7 +61,7 @@ export const optionsSchema: Schema = {
       type: 'boolean'
     },
     retryTimes: {
-      type: 'boolean'
+      type: 'integer'
     }
   },
   required: ['host', 'port', 'user', 'password', 'files', 'destRootPath']
