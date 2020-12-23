@@ -21,7 +21,7 @@ describe('Uploader Sftp', () => {
     done();
   });
 
-  test.only('sftp connect retry', async (done) => {
+  test('sftp connect retry', async (done) => {
     // 连接会失败，并且失败后会重试1次,总共会触发2次upload:connecting事件
     const uploader = new SftpUploader(retrySftpConfig);
     const mockFn = jest.fn(() => {});
