@@ -31,9 +31,6 @@ export abstract class BaseUploader extends EventEmitter {
 
   protected abstract upload(filePath: string): Promise<any>;
 
-  // TODO: 补充单测
-  // TODO: 补充注释
-  // TODO: 补充rxjs方法的类型声明
   public async connect(): Promise<void> {
     const retryTimes = this.options.retry ? this.options.retryTimes || 3 : 0;
 

@@ -1,5 +1,5 @@
 import { FtpUploader } from '../src/ftp_uploader';
-import { ftpConfig, retryFtpConfig } from './widgets/config';
+import { ftpConfig, retryFtpConfig, errorConfig } from './widgets/config';
 
 describe('Uploader Ftp', () => {
   test('run uploader', async (done) => {
@@ -32,6 +32,13 @@ describe('Uploader Ftp', () => {
     await expect(uploader.connect()).rejects.toThrow();
 
     expect(mockFn.mock.calls.length).toBe(2);
+    done();
+  });
+
+  test('ftp options params error', (done) => {
+    expect(() => {
+      new FtpUploader(errorConfig);
+    }).toThrow();
     done();
   });
 });

@@ -40,6 +40,23 @@ run({
 })
 ```
 
+## API
+
+```ts
+export interface Options {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  files: string[];
+  destRootPath: string;
+  rootPath?: string;
+  parallel?: boolean;
+  retry?: boolean;
+  retryTimes?: number;
+}
+```
+
 ## Dev
 
 ```bash

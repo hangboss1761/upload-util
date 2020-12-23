@@ -1,5 +1,6 @@
 import { SftpUploader } from '../src/sftp_uploader';
-import { sftpConfig, retrySftpConfig } from './widgets/config';
+import { sftpConfig, retrySftpConfig, errorConfig } from './widgets/config';
+
 describe('Uploader Sftp', () => {
   test('run uploader', async (done) => {
     const mockFn = jest.fn(() => {});
@@ -31,6 +32,13 @@ describe('Uploader Sftp', () => {
     await expect(uploader.connect()).rejects.toThrow();
 
     expect(mockFn.mock.calls.length).toBe(2);
+    done();
+  });
+
+  test('sftp options params error', (done) => {
+    expect(() => {
+      new SftpUploader(errorConfig);
+    }).toThrow();
     done();
   });
 });
