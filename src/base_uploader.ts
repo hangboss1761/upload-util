@@ -29,7 +29,7 @@ export abstract class BaseUploader extends EventEmitter {
 
   protected abstract connectFn(): Promise<any>;
 
-  protected abstract upload(filePath: string): Promise<any>;
+  public abstract upload(filePath: string): Promise<any>;
 
   public async connect(): Promise<void> {
     const retryTimes = this.options.retry ? this.options.retryTimes || 3 : 0;
@@ -88,7 +88,7 @@ export abstract class BaseUploader extends EventEmitter {
   }
 
   public async startUpload(): Promise<void> {
-    const parsedFiles = parseFiles(this.options.files);
+    const parsedFiles = parseFiles(this.options.files || []);
     const serialOrParallelUpload = this.options.parallel
       ? this.parallelUpload.bind(this, parsedFiles)
       : this.serialUpload.bind(this, parsedFiles);

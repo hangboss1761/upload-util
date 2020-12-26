@@ -40,6 +40,39 @@ run({
 })
 ```
 
+or like this
+
+```ts
+import { FtpUploader } from 'node-upload-util/ftp_uploader';
+import * as glob from 'glob';
+
+const start = async () => {
+  const uploader = new FtpUploader({
+    host: 'ftp.dlptest.com',
+    port: 21,
+    user: 'dlpuser@dlptest.com',
+    password: 'eUj8GeW55SvYaswqUyDSm5v6N',
+    destRootPath: '/'
+  });
+
+  uploader.on('upload:ready', () => console.log('connect ready'))
+  uploader.on('upload:destory', () => console.log('destoryed'))
+
+  const files = glob.sync('test');
+  await uploader.connect();
+
+  for (const filePath of files) {
+    await uploader
+      .upload(filePath)
+      .then(() => console.log(`${filePath} uploaded success`));
+  }
+
+  uploader.destory();
+};
+
+start();
+```
+
 ## API
 
 ```ts
@@ -48,7 +81,7 @@ export interface Options {
   port: number;
   user: string;
   password: string;
-  files: string[];
+  files?: string[];
   destRootPath: string;
   rootPath?: string;
   parallel?: boolean;
@@ -56,7 +89,15 @@ export interface Options {
   retryTimes?: number;
 }
 ```
-
+|事件名|功能|参数|
+|---|---|---|
+|`upload:connecting`|服务器连接中|无|
+|`upload:ready`|连接服务器成功|无|
+|`upload:start`|调用上传接口触发|`options`:用户配置，`files`: 上传文件列表|
+|`upload:file`|单个文件、目录上传成功触发|`options`:用户配置,`files`: 上传文件列表, `filePath`:成功上传的文件、目录本地路径|
+|`upload:success`|所有文件上传成功时触发|`options`:用户配置，`files`: 上传文件列表|
+|`upload:failure`|所有文件上传失败时触发|`options`:用户配置，`e`:错误信息|
+|`upload:destroy`|销毁时触发|无|
 ## Dev
 
 ```bash

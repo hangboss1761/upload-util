@@ -40,23 +40,43 @@ commander
         {
           type: 'input',
           name: 'files',
-          message: 'Please enter the file waiting to be uploaded, please separate multiple files with commas'
+          message:
+            'Please enter the file waiting to be uploaded, please separate multiple files with commas'
         },
         {
           type: 'input',
           name: 'destRootPath',
           message: 'Please enter destPath in remote'
+        },
+        {
+          type: 'confirm',
+          name: 'retry',
+          message: 'Retry when connection fails'
+        },
+        {
+          type: 'input',
+          name: 'retryTimes',
+          message:
+            'Retry times,only effective when the retry switch is turned on'
+        },
+        {
+          type: 'confirm',
+          name: 'parallel',
+          message: 'Parallel upload?'
         }
       ]);
 
       const getUploadOpitons = (response) => ({
         host: response.host,
         user: response.user,
-        port: response.port,
+        port: Number(response.port),
         user: response.user,
         password: response.password,
         files: response.files.split(','),
-        destRootPath: response.destRootPath
+        destRootPath: response.destRootPath,
+        parallel: response.parallel,
+        retry: response.retry,
+        retryTimes: Number(response.retryTimes)
       });
 
       if (response.type === 'sftp') {

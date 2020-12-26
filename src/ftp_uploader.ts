@@ -53,7 +53,7 @@ export class FtpUploader extends BaseUploader {
    * 上传单个文件/目录到目标服务器
    * @param filePath file path
    */
-  protected upload(filePath: string): Promise<string> {
+  public upload(filePath: string): Promise<string> {
     const { mkdir, put } = this.client;
     const localPath = getOriginPath(filePath, this.options.rootPath);
     const destPath = getDestPath(filePath, this.options.destRootPath);

@@ -1,5 +1,5 @@
 import { SftpUploader } from '../src/sftp_uploader';
-import { sftpConfig, retrySftpConfig, errorConfig } from './widgets/config';
+import { sftpConfig, retrySftpConfig, paramsErrorConfig } from './widgets/config';
 
 describe('Uploader Sftp', () => {
   test('run uploader', async (done) => {
@@ -8,12 +8,13 @@ describe('Uploader Sftp', () => {
 
     uploader.on('upload:ready', mockFn);
     uploader.on('upload:start', mockFn);
+    uploader.on('upload:connecting', mockFn);
     uploader.on('upload:success', () => {
       mockFn();
       uploader.destory();
     });
     uploader.on('upload:destroy', () =>
-      expect(mockFn.mock.calls.length).toBe(3)
+      expect(mockFn.mock.calls.length).toBe(4)
     );
 
     await expect(uploader.connect()).resolves.toBeUndefined();
@@ -37,7 +38,7 @@ describe('Uploader Sftp', () => {
 
   test('sftp options params error', (done) => {
     expect(() => {
-      new SftpUploader(errorConfig);
+      new SftpUploader(paramsErrorConfig);
     }).toThrow();
     done();
   });

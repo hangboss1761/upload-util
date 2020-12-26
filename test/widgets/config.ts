@@ -1,6 +1,6 @@
 import { Options, Config } from '../../src/interface/interface';
 
-const ftpConfig: Options = {
+export const ftpConfig: Options = {
   host: 'ftp.dlptest.com',
   port: 21,
   user: 'dlpuser@dlptest.com',
@@ -11,7 +11,7 @@ const ftpConfig: Options = {
   retry: true
 };
 
-const retryFtpConfig: Options = {
+export const retryFtpConfig: Options = {
   host: '192.168.0.0', // error host
   port: 21,
   user: '',
@@ -23,12 +23,23 @@ const retryFtpConfig: Options = {
   retryTimes: 1
 };
 
-const errorConfig: any = {
+export const paramsErrorConfig: any = {
   host: '192.168.0.0',
   port: 21
 };
 
-const sftpConfig: Options = {
+export const connectErrorConfig: any = {
+  host: 'ftp.dlptest.com1',
+  port: 21,
+  user: 'dlpuser@dlptest.com',
+  password: 'eUj8GeW55SvYaswqUyDSm5v6N',
+  files: ['test', 'package.json'],
+  destRootPath: '/',
+  parallel: true,
+  retry: false
+}
+
+export const sftpConfig: Options = {
   host: '47.56.223.228',
   port: 22,
   user: 'root',
@@ -37,7 +48,7 @@ const sftpConfig: Options = {
   destRootPath: '/gyh/sftp'
 };
 
-const retrySftpConfig: Options = {
+export const retrySftpConfig: Options = {
   host: '47.56.223.111',
   port: 22,
   user: 'root',
@@ -48,7 +59,7 @@ const retrySftpConfig: Options = {
   retryTimes: 1
 };
 
-const config: Config = {
+export const config: Config = {
   ftp: {
     ...ftpConfig,
     files: ['package.json']
@@ -57,13 +68,4 @@ const config: Config = {
     ...sftpConfig,
     files: ['package.json']
   }
-};
-
-export {
-  config,
-  ftpConfig,
-  retryFtpConfig,
-  sftpConfig,
-  retrySftpConfig,
-  errorConfig
 };

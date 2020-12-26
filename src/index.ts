@@ -24,13 +24,11 @@ const uploadFactory = (constructor, options: Options): Uploader => {
 
 export const run = async (config: Config): Promise<void> => {
   const uploaderRunner = new UploaderRunner();
-  if (config.ftp) {
+  config.ftp &&
     uploaderRunner.register('ftp', uploadFactory(FtpUploader, config.ftp));
-  }
 
-  if (config.sftp) {
+  config.sftp &&
     uploaderRunner.register('sftp', uploadFactory(SftpUploader, config.sftp));
-  }
 
   try {
     return uploaderRunner.start();

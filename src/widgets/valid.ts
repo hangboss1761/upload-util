@@ -64,5 +64,5 @@ export const optionsSchema: Schema = {
       type: 'integer'
     }
   },
-  required: ['host', 'port', 'user', 'password', 'files', 'destRootPath']
+  required: ['host', 'port', 'user', 'password', 'destRootPath']
 };

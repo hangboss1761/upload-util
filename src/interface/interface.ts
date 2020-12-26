@@ -3,7 +3,7 @@ export interface Options {
   port: number;
   user: string;
   password: string;
-  files: string[];
+  files?: string[];
   destRootPath: string;
   rootPath?: string;
   parallel?: boolean;
