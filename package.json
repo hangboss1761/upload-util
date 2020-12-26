@@ -1,6 +1,6 @@
 {
   "name": "node-upload-util",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A node upload util, Support ftp and sftp",
   "main": "dist/index.js",
   "files": [
