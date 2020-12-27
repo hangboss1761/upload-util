@@ -54,7 +54,7 @@ const start = async () => {
     password: 'eUj8GeW55SvYaswqUyDSm5v6N',
     destRootPath: '/'
   });
-
+  
   uploader.on('upload:ready', () => console.log('connect ready'))
   uploader.on('upload:destory', () => console.log('destoryed'))
 

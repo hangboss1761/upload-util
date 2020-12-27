@@ -56,7 +56,7 @@ module.exports = {
     // '@typescript-eslint/semi': ['error'],
     // '@typescript-eslint/indent': ['error', 2],
     // '@typescript-eslint/explicit-function-return-type': 0,
-    '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+    '@typescript-eslint/consistent-type-definitions': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-unused-expressions': 0,
     '@typescript-eslint/no-var-requires': 0
