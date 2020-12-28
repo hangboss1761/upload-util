@@ -3,8 +3,10 @@ import {
   UploadOptions,
   UploaderMixin,
   UploaderInstance,
-  UseUploaderResult
+  UseUploaderResult,
+  LifecycleHooks
 } from './interface';
+import { createHook } from './hook';
 
 const uploaderMap = new Map<string, UploaderMixin>();
 
@@ -42,6 +44,20 @@ export const useUploader = (type: string): UseUploaderResult => {
   const uploaderInstance: UploaderInstance = getUploaderInstance(
     uploaderMap.get(type)
   );
+
+  // lifecycleHooks
+  const onConnecting = createHook(
+    LifecycleHooks.ON_CONNECTING,
+    uploaderInstance
+  );
+  const onReady = createHook(LifecycleHooks.ON_READY, uploaderInstance);
+  const onStart = createHook(LifecycleHooks.ON_START, uploaderInstance);
+  const onFile = createHook(LifecycleHooks.ON_FILE, uploaderInstance);
+  const onSuccess = createHook(LifecycleHooks.ON_SUCCESS, uploaderInstance);
+  const onFailure = createHook(LifecycleHooks.ON_FAILURE, uploaderInstance);
+  const onDestory = createHook(LifecycleHooks.ON_DESTORY, uploaderInstance);
+
+  // core methods
   const connect = baseConnect(uploaderInstance);
   const upload = baseUpload(uploaderInstance);
   const destory = baseDestory(uploaderInstance);
@@ -49,7 +65,14 @@ export const useUploader = (type: string): UseUploaderResult => {
   return {
     connect,
     upload,
-    destory
+    destory,
+    onConnecting,
+    onReady,
+    onStart,
+    onFile,
+    onSuccess,
+    onFailure,
+    onDestory
   };
 };
 

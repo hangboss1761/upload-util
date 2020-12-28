@@ -17,7 +17,7 @@ const {
   // onStart,
   // onFile,
   // onSuccess,
-  // onError,
+  // onFailure,
   // onDestory
 } = useUploader('ftp');
 
