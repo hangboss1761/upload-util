@@ -48,12 +48,12 @@ export interface UploaderMixin<T = any> {
 
 export interface UploaderInstance<T = any> extends UploaderMixin<T> {
   client: T;
-  [LifecycleHooks.ON_CONNECTING]: Function[] | null;
-  [LifecycleHooks.ON_READY]: Function[] | null;
-  [LifecycleHooks.ON_START]: Function[] | null;
-  [LifecycleHooks.ON_FILE]: Function[] | null;
-  [LifecycleHooks.ON_SUCCESS]: Function[] | null;
-  [LifecycleHooks.ON_FAILURE]: Function[] | null;
-  [LifecycleHooks.ON_DESTORY]: Function[] | null;
+  [LifecycleHooks.ON_CONNECTING]?: Function[] | null;
+  [LifecycleHooks.ON_READY]?: Function[] | null;
+  [LifecycleHooks.ON_START]?: Function[] | null;
+  [LifecycleHooks.ON_FILE]?: Function[] | null;
+  [LifecycleHooks.ON_SUCCESS]?: Function[] | null;
+  [LifecycleHooks.ON_FAILURE]?: Function[] | null;
+  [LifecycleHooks.ON_DESTORY]?: Function[] | null;
   destoryed: boolean;
 }
