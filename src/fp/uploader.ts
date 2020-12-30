@@ -6,29 +6,41 @@ import {
   UseUploaderResult,
   LifecycleHooks
 } from './interface';
-import { createHook } from './hook';
+import { createHook, invokeHooks } from './hook';
 
 const uploaderMap = new Map<string, UploaderMixin>();
 
 const baseConnect = (uploaderInstance: UploaderInstance) => {
   return async (connectOptions: ConnectOptions): Promise<any> => {
-    return uploaderInstance.connect(uploaderInstance.client, connectOptions);
+    uploaderInstance.onConnecting && invokeHooks(uploaderInstance.onConnecting);
+    const connectRes = await uploaderInstance.connect(
+      uploaderInstance.client,
+      connectOptions
+    );
+
+    uploaderInstance.onReady && invokeHooks(uploaderInstance.onReady);
+    return connectRes;
   };
 };
 
 const baseUpload = (uploaderInstance: UploaderInstance) => {
   return async (file: string, uploadOptions: UploadOptions): Promise<any> => {
-    return uploaderInstance.upload(
+    uploaderInstance.onStart && invokeHooks(uploaderInstance.onStart, file);
+    const uploadRes = await uploaderInstance.upload(
       uploaderInstance.client,
       file,
       uploadOptions
     );
+
+    uploaderInstance.onFile && invokeHooks(uploaderInstance.onFile, file);
+    return uploadRes;
   };
 };
 
 const baseDestory = (uploaderInstance: UploaderInstance) => {
   return async (): Promise<any> => {
-    return uploaderInstance.destory(uploaderInstance.client);
+    await uploaderInstance.destory(uploaderInstance.client);
+    uploaderInstance.onDestoryed && invokeHooks(uploaderInstance.onDestoryed);
   };
 };
 
@@ -53,9 +65,8 @@ export const useUploader = (type: string): UseUploaderResult => {
   const onReady = createHook(LifecycleHooks.ON_READY, uploaderInstance);
   const onStart = createHook(LifecycleHooks.ON_START, uploaderInstance);
   const onFile = createHook(LifecycleHooks.ON_FILE, uploaderInstance);
-  const onSuccess = createHook(LifecycleHooks.ON_SUCCESS, uploaderInstance);
   const onFailure = createHook(LifecycleHooks.ON_FAILURE, uploaderInstance);
-  const onDestory = createHook(LifecycleHooks.ON_DESTORY, uploaderInstance);
+  const onDestoryed = createHook(LifecycleHooks.ON_DESTORY, uploaderInstance);
 
   // core methods
   const connect = baseConnect(uploaderInstance);
@@ -70,9 +81,8 @@ export const useUploader = (type: string): UseUploaderResult => {
     onReady,
     onStart,
     onFile,
-    onSuccess,
     onFailure,
-    onDestory
+    onDestoryed
   };
 };
 

@@ -1,6 +1,6 @@
 import { LifecycleHooks, UploaderInstance } from './interface';
 
-type CreateHookResult = (hook: () => any) => void;
+type CreateHookResult = (hook: (v?: any) => any) => void;
 
 export const injectHook = (
   type: LifecycleHooks,

@@ -11,20 +11,38 @@ register<SftpClient>('sftp', sftpUploader);
 const {
   connect,
   upload,
-  destory
-  // onConnecting,
-  // onReady,
-  // onStart,
-  // onFile,
-  // onSuccess,
-  // onFailure,
-  // onDestory
+  destory,
+  onConnecting,
+  onReady,
+  onStart,
+  onFile,
+  onFailure,
+  onDestoryed
 } = useUploader('ftp');
+
+onConnecting(() => {
+  console.log('on-connection');
+});
+onReady(() => {
+  console.log('on-onReady');
+});
+onStart((file:string) => {
+  console.log('on-onStart: ', file);
+});
+onFile((file: string) => {
+  console.log('on-onFile: ', file);
+});
+onFailure(() => {
+  console.log('on-onFailure');
+});
+onDestoryed(() => {
+  console.log('on-onDestoryed');
+});
 
 const start = async () => {
   const files = parseFiles(['test']);
   await connect({
-    host: '192.168.0.105',
+    host: '10.32.133.30',
     port: 21,
     user: '',
     password: ''
