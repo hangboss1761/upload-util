@@ -37,7 +37,7 @@ const baseConnect = (uploaderInstance: UploaderInstance) => {
     } catch (error) {
       if (retryTimes)
         logger.error(`Connect error! Retried ${retryTimes} times then quit`);
-      throw new Error(error);
+      throw new Error(`Connect error! Retried ${retryTimes} times then quit`);
     }
   };
 };

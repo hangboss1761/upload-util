@@ -1,17 +1,17 @@
-import * as Client from 'ssh2-sftp-client';
+import * as Sftp from 'ssh2-sftp-client';
 import { uploadFn } from '../widgets/upload';
 import { getOriginPath, getDestPath, isDirectory } from '../widgets/file';
 import { UploaderMixin, ConnectOptions, UploadOptions } from './interface';
 
-export type SftpClient = Client;
+export type SftpClient = Sftp;
 
 export const sftpUploader: UploaderMixin = {
-  create: () => new Client(),
-  connect: (client: Client, connectOptions: ConnectOptions): Promise<any> => {
+  create: () => new Sftp(),
+  connect: (client: Sftp, connectOptions: ConnectOptions): Promise<any> => {
     return client.connect(connectOptions);
   },
   upload: (
-    client: Client,
+    client: Sftp,
     filePath: string,
     uploadOptions: UploadOptions
   ): Promise<any> => {
@@ -27,7 +27,7 @@ export const sftpUploader: UploaderMixin = {
       [localPath, destPath]
     ) as Promise<string>;
   },
-  destory: (client: Client): Promise<any> => {
+  destory: (client: Sftp): Promise<any> => {
     return client.end();
   }
 };

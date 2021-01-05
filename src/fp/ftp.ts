@@ -1,14 +1,14 @@
-import * as Client from 'ftp';
+import * as Ftp from 'ftp';
 import * as util from 'util';
 import { uploadFn } from '../widgets/upload';
 import { getOriginPath, getDestPath, isDirectory } from '../widgets/file';
 import { UploaderMixin, ConnectOptions, UploadOptions } from './interface';
 
-export type FtpClient = Client;
+export type FtpClient = Ftp;
 
 export const ftpUploader: UploaderMixin = {
-  create: () => new Client(),
-  connect: (client: Client, connectOptions: ConnectOptions): Promise<any> => {
+  create: () => new Ftp(),
+  connect: (client: Ftp, connectOptions: ConnectOptions): Promise<any> => {
     return new Promise((resolve, reject) => {
       client.connect(connectOptions);
 
@@ -17,7 +17,7 @@ export const ftpUploader: UploaderMixin = {
     });
   },
   upload: (
-    client: Client,
+    client: Ftp,
     filePath: string,
     uploadOptions: UploadOptions
   ): Promise<any> => {
@@ -33,7 +33,7 @@ export const ftpUploader: UploaderMixin = {
       [localPath, destPath, false]
     ) as Promise<string>;
   },
-  destory: async (client: Client): Promise<any> => {
+  destory: async (client: Ftp): Promise<any> => {
     client.destroy();
   }
 };
