@@ -28,7 +28,7 @@ export const createHook = (
   };
 };
 
-export const invokeHooks = (fns: Function[], arg?: any): void => {
+export const invokeHooks = (fns: Function[] = [], arg?: any): void => {
   for (let i = 0; i < fns.length; i++) {
     fns[i](arg);
   }

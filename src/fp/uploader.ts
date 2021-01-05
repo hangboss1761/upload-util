@@ -1,3 +1,5 @@
+import { from } from 'rxjs';
+import { retry, switchMap } from 'rxjs/operators';
 import {
   ConnectOptions,
   UploadOptions,
@@ -7,40 +9,63 @@ import {
   LifecycleHooks
 } from './interface';
 import { createHook, invokeHooks } from './hook';
+import { logger } from '../widgets/log';
 
 const uploaderMap = new Map<string, UploaderMixin>();
 
 const baseConnect = (uploaderInstance: UploaderInstance) => {
   return async (connectOptions: ConnectOptions): Promise<any> => {
-    uploaderInstance.onConnecting && invokeHooks(uploaderInstance.onConnecting);
-    const connectRes = await uploaderInstance.connect(
-      uploaderInstance.client,
-      connectOptions
-    );
+    const retryTimes = connectOptions.retry
+      ? connectOptions.retryTimes || 3
+      : 0;
 
-    uploaderInstance.onReady && invokeHooks(uploaderInstance.onReady);
-    return connectRes;
+    logger.trace(connectOptions);
+
+    try {
+      const res = await from(Promise.resolve(1))
+        .pipe(
+          switchMap(() =>
+            uploaderInstance.connect(uploaderInstance.client, connectOptions)
+          ),
+          retry(retryTimes)
+        )
+        .toPromise();
+      logger.info('connect ready.');
+
+      invokeHooks(uploaderInstance.onReady);
+      return res;
+    } catch (error) {
+      if (retryTimes)
+        logger.error(`Connect error! Retried ${retryTimes} times then quit`);
+      throw new Error(error);
+    }
   };
 };
 
 const baseUpload = (uploaderInstance: UploaderInstance) => {
   return async (file: string, uploadOptions: UploadOptions): Promise<any> => {
-    uploaderInstance.onStart && invokeHooks(uploaderInstance.onStart, file);
-    const uploadRes = await uploaderInstance.upload(
-      uploaderInstance.client,
-      file,
-      uploadOptions
-    );
+    try {
+      logger.info('start upload.');
+      invokeHooks(uploaderInstance.onStart, file);
+      const uploadRes = await uploaderInstance.upload(
+        uploaderInstance.client,
+        file,
+        uploadOptions
+      );
 
-    uploaderInstance.onFile && invokeHooks(uploaderInstance.onFile, file);
-    return uploadRes;
+      invokeHooks(uploaderInstance.onFile, file);
+      return uploadRes;
+    } catch (error) {
+      invokeHooks(uploaderInstance.onFailure, error);
+      throw new Error(error);
+    }
   };
 };
 
 const baseDestory = (uploaderInstance: UploaderInstance) => {
   return async (): Promise<any> => {
     await uploaderInstance.destory(uploaderInstance.client);
-    uploaderInstance.onDestoryed && invokeHooks(uploaderInstance.onDestoryed);
+    invokeHooks(uploaderInstance.onDestoryed);
   };
 };
 
