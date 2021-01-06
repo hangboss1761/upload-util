@@ -18,7 +18,6 @@ const baseConnect = (uploaderInstance: UploaderInstance) => {
     const retryTimes = connectOptions.retry
       ? connectOptions.retryTimes || 3
       : 0;
-
     logger.trace(connectOptions);
 
     try {
@@ -30,14 +29,14 @@ const baseConnect = (uploaderInstance: UploaderInstance) => {
           retry(retryTimes)
         )
         .toPromise();
-      logger.info('connect ready.');
+      logger.info('Connect ready.');
 
       invokeHooks(uploaderInstance.onReady);
       return res;
     } catch (error) {
       if (retryTimes)
         logger.error(`Connect error! Retried ${retryTimes} times then quit`);
-      throw new Error(`Connect error! Retried ${retryTimes} times then quit`);
+      throw Error(error);
     }
   };
 };
@@ -45,13 +44,15 @@ const baseConnect = (uploaderInstance: UploaderInstance) => {
 const baseUpload = (uploaderInstance: UploaderInstance) => {
   return async (file: string, uploadOptions: UploadOptions): Promise<any> => {
     try {
-      logger.info('start upload.');
+      logger.info(`Start upload file: ${file}`);
       invokeHooks(uploaderInstance.onStart, file);
       const uploadRes = await uploaderInstance.upload(
         uploaderInstance.client,
         file,
         uploadOptions
       );
+
+      logger.info(`File upload successfully: ${file}`);
 
       invokeHooks(uploaderInstance.onFile, file);
       return uploadRes;
@@ -64,8 +65,13 @@ const baseUpload = (uploaderInstance: UploaderInstance) => {
 
 const baseDestory = (uploaderInstance: UploaderInstance) => {
   return async (): Promise<any> => {
-    await uploaderInstance.destory(uploaderInstance.client);
-    invokeHooks(uploaderInstance.onDestoryed);
+    try {
+      await uploaderInstance.destory(uploaderInstance.client);
+      logger.info('Destroyed successfully.');
+      invokeHooks(uploaderInstance.onDestoryed);
+    } catch (error) {
+      throw Error(error);
+    }
   };
 };
 
