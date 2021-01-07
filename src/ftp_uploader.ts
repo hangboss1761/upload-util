@@ -1,4 +1,4 @@
-import * as Client from 'ftp';
+import * as Ftp from 'ftp';
 import * as util from 'util';
 import { Schema } from 'jsonschema';
 import { fromEvent } from 'rxjs';
@@ -10,7 +10,7 @@ import { uploadFn } from './widgets/upload';
 import { Options } from './interface/interface';
 
 export class FtpUploader extends BaseUploader {
-  protected client: Client;
+  protected client: Ftp;
 
   constructor(options: Options) {
     super(options);
@@ -28,23 +28,23 @@ export class FtpUploader extends BaseUploader {
     return true;
   }
 
-  protected connectFn(): Promise<Client> {
+  protected connectFn(): Promise<Ftp> {
     return new Promise((resolve, reject) => {
-      const client = new Client();
+      const client = new Ftp();
 
       this.onConnecting();
-      client.connect({
-        host: this.options.host,
-        port: this.options.port,
-        user: this.options.user,
-        password: this.options.password
-      });
-
       fromEvent(client, 'ready').subscribe(() => {
         resolve(client);
       });
       fromEvent(client, 'error').subscribe((e: string) => {
         reject(e);
+      });
+
+      client.connect({
+        host: this.options.host,
+        port: this.options.port,
+        user: this.options.user,
+        password: this.options.password
       });
     });
   }
