@@ -7,7 +7,7 @@ export const ftpConfig: Options = {
   password: 'eUj8GeW55SvYaswqUyDSm5v6N',
   files: ['test/demo'],
   destRootPath: '/',
-  parallel: true,
+  parallel: false,
   retry: true
 };
 
@@ -62,10 +62,6 @@ export const retrySftpConfig: Options = {
 export const config: Config = {
   ftp: {
     ...ftpConfig,
-    files: ['test/demo']
-  },
-  sftp: {
-    ...sftpConfig,
     files: ['test/demo']
   }
 };
