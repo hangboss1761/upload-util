@@ -57,8 +57,9 @@ const baseUpload = (uploaderInstance: UploaderInstance) => {
       invokeHooks(uploaderInstance.onFile, file);
       return uploadRes;
     } catch (error) {
+      logger.info(`File upload failed: ${file}`);
       invokeHooks(uploaderInstance.onFailure, error);
-      throw new Error(error);
+      return Promise.reject(Error(`File upload failed: ${file}`));
     }
   };
 };
@@ -84,6 +85,10 @@ const getUploaderInstance = (uploadMixin: UploaderMixin): UploaderInstance => {
 };
 
 export const useUploader = (type: string): UseUploaderResult => {
+  if (!uploaderMap.get(type)) {
+    throw Error(`${type} type not registered.`);
+  }
+
   const uploaderInstance: UploaderInstance = getUploaderInstance(
     uploaderMap.get(type)
   );

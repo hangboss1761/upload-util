@@ -1,5 +1,6 @@
 import * as Sftp from 'ssh2-sftp-client';
 import { mocked } from 'ts-jest/utils';
+import { defaultSftpMockImplementation } from './mock_sftp';
 import { ftpUploader, FtpClient } from '../src/fp/ftp';
 import { sftpUploader, SftpClient } from '../src/fp/sftp';
 import { register, useUploader } from '../src/fp/uploader';
@@ -10,13 +11,6 @@ const connectOptions = {
   port: 22,
   user: '',
   password: ''
-};
-
-const defaultSftpMockImplementation = {
-  connect: () => Promise.resolve(),
-  mkdir: () => Promise.resolve(),
-  put: () => Promise.resolve(),
-  end: () => Promise.resolve()
 };
 
 register<FtpClient>('ftp', ftpUploader);
@@ -39,6 +33,16 @@ describe('fp sftp upload', () => {
   });
 
   test('lifecycleHooks work', async (done) => {
+    const onceSuccessOnceErrorFn = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.resolve())
+      .mockImplementationOnce(() => Promise.reject('error'));
+    mocked(Sftp).mockImplementation((): any => {
+      return {
+        ...defaultSftpMockImplementation,
+        put: onceSuccessOnceErrorFn
+      };
+    });
     const lifecycleMockFn = jest.fn(() => {});
     const {
       connect,
@@ -64,13 +68,16 @@ describe('fp sftp upload', () => {
       rootPath: process.cwd(),
       destRootPath: '/'
     });
+
+    await upload(parseFiles(['test/demo/demo.txt'])[0], {
+      rootPath: process.cwd(),
+      destRootPath: '/'
+    }).catch((e) => e);
     await destory();
 
     expect(lifecycleMockFn).toBeCalledTimes(6);
     done();
   });
-
-  // test('register work', () => {})
   test('connect work', async (done) => {
     const { connect, destory } = useUploader('sftp');
     await connect(connectOptions);
@@ -125,7 +132,7 @@ describe('fp sftp upload', () => {
     await destory();
     done();
   });
-  test.only('connect error', async (done) => {
+  test('connect error', async (done) => {
     mocked(Sftp).mockImplementation((): any => ({
       ...defaultSftpMockImplementation,
       connect: () => Promise.reject('error')
@@ -136,7 +143,7 @@ describe('fp sftp upload', () => {
     await destory();
     done();
   });
-  test.only('upload work', async (done) => {
+  test('upload work', async (done) => {
     const { connect, upload, destory } = useUploader('sftp');
     await connect(connectOptions);
     await expect(
@@ -166,7 +173,7 @@ describe('fp sftp upload', () => {
     await destory();
     done();
   });
-  test.only('destory work', async (done) => {
+  test('destory work', async (done) => {
     mocked(Sftp).mockImplementation((): any => ({
       ...defaultSftpMockImplementation,
       end: () => Promise.reject('error')
