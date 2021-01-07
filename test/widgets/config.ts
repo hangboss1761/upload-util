@@ -7,7 +7,7 @@ export const ftpConfig: Options = {
   password: 'eUj8GeW55SvYaswqUyDSm5v6N',
   files: ['test/demo'],
   destRootPath: '/',
-  parallel: fa,
+  parallel: false,
   retry: true
 };
 
