@@ -5,7 +5,7 @@ export const ftpConfig: Options = {
   port: 21,
   user: 'dlpuser@dlptest.com',
   password: 'eUj8GeW55SvYaswqUyDSm5v6N',
-  files: ['test', 'package.json'],
+  files: ['test/demo'],
   destRootPath: '/',
   parallel: true,
   retry: true
@@ -16,8 +16,8 @@ export const retryFtpConfig: Options = {
   port: 21,
   user: '',
   password: '',
-  files: ['test', 'package.json'],
-  destRootPath: '/gyh/ftp',
+  files: ['test/demo'],
+  destRootPath: '/',
   parallel: true,
   retry: true,
   retryTimes: 1
@@ -33,28 +33,28 @@ export const connectErrorConfig: any = {
   port: 21,
   user: 'dlpuser@dlptest.com',
   password: 'eUj8GeW55SvYaswqUyDSm5v6N',
-  files: ['test', 'package.json'],
+  files: ['test/demo'],
   destRootPath: '/',
   parallel: true,
   retry: false
-}
+};
 
 export const sftpConfig: Options = {
-  host: '47.56.223.228',
+  host: '47.56.223.111',
   port: 22,
   user: 'root',
-  password: '2020@host',
-  files: ['demo.exe', 'test', 'package.json'],
-  destRootPath: '/gyh/sftp'
+  password: 'root',
+  files: ['test/demo'],
+  destRootPath: '/'
 };
 
 export const retrySftpConfig: Options = {
   host: '47.56.223.111',
   port: 22,
   user: 'root',
-  password: '2020@host',
-  files: ['demo.exe', 'test', 'package.json'],
-  destRootPath: '/gyh/sftp',
+  password: 'root',
+  files: ['test/demo'],
+  destRootPath: '/',
   retry: true,
   retryTimes: 1
 };
@@ -62,10 +62,10 @@ export const retrySftpConfig: Options = {
 export const config: Config = {
   ftp: {
     ...ftpConfig,
-    files: ['package.json']
+    files: ['test/demo']
   },
   sftp: {
     ...sftpConfig,
-    files: ['package.json']
+    files: ['test/demo']
   }
 };
