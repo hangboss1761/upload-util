@@ -9,6 +9,7 @@ export const injectHook = (
 ): void => {
   const hooks = target[type] || (target[type] = []);
 
+  // 外部传入同一个hook时，不会重复生成__wrapperHook
   const wrapperHook =
     hook.__wrapperHook ||
     (hook.__wrapperHook = (...args: unknown[]): unknown => {

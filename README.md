@@ -98,6 +98,11 @@ export interface Options {
 |`upload:success`|所有文件上传成功时触发|`options`:用户配置，`files`: 上传文件列表|
 |`upload:failure`|所有文件上传失败时触发|`options`:用户配置，`e`:错误信息|
 |`upload:destroy`|销毁时触发|无|
+
+## 函数式编程实现
+
+[函数式编程实现](./src/fp/README.md)
+
 ## Dev
 
 ```bash
@@ -131,3 +136,5 @@ yarn test
 # or
 yarn test:cover
 ```
+
+![cover](./screenshot/cover.png)
