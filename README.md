@@ -1,5 +1,5 @@
 # 文件上传
-[![Build Status](https://travis-ci.com/hangboss1761/upload-util.svg?branch=master)](https://travis-ci.com/hangboss1761/upload-util) [![Coverage Status](https://coveralls.io/repos/github/hangboss1761/upload-util/badge.svg)](https://coveralls.io/github/hangboss1761/upload-util) [![GitHub license](https://img.shields.io/github/license/hangboss1761/upload-util)](https://github.com/hangboss1761/upload-util)
+[![GitHub license](https://img.shields.io/github/license/hangboss1761/upload-util)](https://github.com/hangboss1761/upload-util)
 ## Install
 
 ```bash
